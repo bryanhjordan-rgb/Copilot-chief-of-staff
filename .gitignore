@@ -27,3 +27,6 @@ dist/
 
 # Python
 __pycache__/
+
+# Personal agent profile (copy of m365/agent/profile.example.yaml)
+m365/agent/profile.yaml

@@ -6,7 +6,7 @@ description: >-
   "what should I drop?", after intake adds an item, and inside daily-brief. Do not
   use to create items (use intake) or to close them (use reconcile).
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   tier: "native"
   signatures: "rank|items|self"
   tools: "excel, outlook-calendar"
@@ -29,7 +29,7 @@ Every open item has a current Score, Tier, ScoreBreakdown, Rationale, and NextAc
 |--------|--------|------|
 | Deadline pressure | 0–30 | overdue 30 · due today 25 · ≤2 days 20 · ≤7 days 12 · later 5 · no due date 0 |
 | Goal fit | 0–25 | work goal (G*) priority 1 → 25 · priority 2 → 18 · priority 3+ → 12 · personal goal (PG*) → 8 · none → 0 |
-| Stakeholder weight | 0–15 | exec/board/key customer 15 · manager or direct team 10 · peer 6 · other 2 · self only 0 |
+| Stakeholder weight | 0–15 | "Key people" from the instructions, exec/board, key customer 15 · manager or direct team 10 · peer 6 · other 2 · self only 0 |
 | Unblocks others | 0–15 | someone is blocked now 15 · someone waits within 2 days 8 · no 0 |
 | Leverage | 0–10 | decision, delegation, or reusable system 10 · normal 5 · busywork 0 |
 | Age | 0–5 | Created >14 days ago 5 · >7 days 3 · else 0 |

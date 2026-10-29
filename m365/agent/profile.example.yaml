@@ -1,0 +1,29 @@
+# Profile — the personal values the agent instructions need.
+#
+# Copy to m365/agent/profile.yaml (gitignored), fill it in, then:
+#   python3 m365/scripts/render_instructions.py
+# which writes dist/instructions.md, ready to paste into Copilot Studio.
+# Use the same values as the root CLAUDE.md so both assistants agree.
+
+name: "Jordan Example"
+first_name: "Jordan"
+role: "Director of Operations"
+company: "Contoso"
+
+home_by: "5:30 PM"            # hard stop; plans and meetings after this get flagged
+earliest_meeting: "8:30 AM"   # nothing gets planned before this
+timezone: "America/New_York"
+
+# Extra hard constraints, one per line (optional)
+constraints:
+  - "Fridays after 2 PM are no-meeting focus time"
+  - "School pickup 3:15–3:45 PM on Wednesdays"
+
+# People whose messages and asks always count as key (optional).
+# Triage treats them as Tier 1; prioritize gives them full stakeholder weight.
+key_people:
+  - "Sam Lee (manager)"
+  - "Priya Patel (CFO)"
+
+# How you write. One to three sentences; the agent drafts in this voice.
+tone: "Direct but warm. Short sentences, no corporate filler, no exclamation marks."

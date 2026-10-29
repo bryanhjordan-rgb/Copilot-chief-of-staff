@@ -23,8 +23,7 @@
 3. **Name:** `Chief of Staff`. **Description:** copy it from `agent/agent-config.yaml`.
 4. **Orchestration / harness:** choose the GitHub Copilot harness if offered (R4). Otherwise use generative orchestration.
 5. **Model:** Claude Sonnet 5 if it's allowed (R10). Otherwise use the default. You'll A/B test later (Q4).
-6. **Instructions:** fill the `{{PLACEHOLDERS}}` in `agent/instructions.md` (name, role, company, home-by time, earliest meeting, tone), paste it in, and save.
-   - Check the length first: `python3 m365/scripts/skills.py check-instructions` must report ≤ 8000.
+6. **Instructions:** copy `m365/agent/profile.example.yaml` to `m365/agent/profile.yaml` (gitignored) and fill in your name, role, company, home-by time, earliest meeting, extra constraints, key people, and tone. Then run `python3 m365/scripts/render_instructions.py`, paste `dist/instructions.md` into Instructions, and save. The script fails if anything is left unfilled or the result is over 8,000 characters.
 
 ## Step 3 — Add the Excel tools (20 min)
 

@@ -23,7 +23,8 @@ m365/
 │   ├── 07-tenant-readiness.md  # checklist for IT (do this first)
 │   └── 08-build-guide.md       # Phase 1 step-by-step in Copilot Studio
 ├── agent/
-│   ├── instructions.md         # agent instructions (<8k chars, checked)
+│   ├── instructions.md         # agent instructions template (<8k chars, checked)
+│   ├── profile.example.yaml    # your values → render_instructions.py fills the template
 │   └── agent-config.yaml       # tools, knowledge, triggers, model
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
@@ -40,7 +41,8 @@ m365/
     ├── skills.py               # validate + package skills for import
     ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
     ├── lint_workbook.py        # check a live workbook against schema + cell conventions
-    └── mine.py                 # reference implementation of the mining Office Script
+    ├── mine.py                 # reference implementation of the mining Office Script
+    └── render_instructions.py  # profile.yaml → dist/instructions.md (paste into Copilot Studio)
 ```
 
 ## Working with skills
@@ -77,4 +79,4 @@ CI runs `validate`, a workbook build, the linter, and `python3 -m unittest disco
 1. [07-tenant-readiness.md](docs/07-tenant-readiness.md) — confirm what your tenant allows
 2. [08-build-guide.md](docs/08-build-guide.md) — Phase 1 build, step by step, with smoke tests
 3. [05-roadmap.md](docs/05-roadmap.md) — phases and exit tests
-4. Fill the `{{PLACEHOLDERS}}` in `agent/instructions.md` (same values as the root `CLAUDE.md`)
+4. Copy `agent/profile.example.yaml` to `agent/profile.yaml`, fill it in, and run `python3 m365/scripts/render_instructions.py`

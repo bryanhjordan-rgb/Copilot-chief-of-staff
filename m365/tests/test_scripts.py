@@ -24,6 +24,7 @@ skills = load("skills")
 build_workbook = load("build_workbook")
 lint_workbook = load("lint_workbook")
 mine = load("mine")
+render_instructions = load("render_instructions")
 
 
 class WorkbookTestCase(unittest.TestCase):
@@ -244,6 +245,42 @@ class MiningTests(unittest.TestCase):
                     self.assertEqual(json.loads(out), mine.mine(MINING_ITEMS, MINING_SKILLS, "2026-10-29", window))
         finally:
             shutil.rmtree(tmp)
+
+
+class RenderInstructionsTests(unittest.TestCase):
+    AGENT = Path(__file__).resolve().parent.parent / "agent"
+
+    def template(self):
+        return (self.AGENT / "instructions.md").read_text(encoding="utf-8")
+
+    def example(self):
+        import yaml
+        return yaml.safe_load((self.AGENT / "profile.example.yaml").read_text(encoding="utf-8"))
+
+    def test_example_profile_renders_completely(self):
+        text = render_instructions.render(self.template(), self.example())
+        self.assertNotIn("{{", text)
+        self.assertLessEqual(len(text), render_instructions.MAX_CHARS)
+        self.assertIn("- Fridays after 2 PM are no-meeting focus time\n", text)
+        self.assertIn("Key people (always Tier 1 in triage, full stakeholder weight): Sam Lee (manager)", text)
+
+    def test_no_constraints_drops_the_line(self):
+        profile = self.example()
+        profile["constraints"], profile["key_people"] = [], []
+        text = render_instructions.render(self.template(), profile)
+        self.assertIn("No meetings before 8:30 AM.\n\n## Guardrails", text)
+
+    def test_missing_value_is_named(self):
+        profile = self.example()
+        del profile["home_by"]
+        with self.assertRaisesRegex(render_instructions.ProfileError, "home_by"):
+            render_instructions.render(self.template(), profile)
+
+    def test_too_long_is_rejected(self):
+        profile = self.example()
+        profile["tone"] = "x" * 3000
+        with self.assertRaisesRegex(render_instructions.ProfileError, "chars"):
+            render_instructions.render(self.template(), profile)
 
 
 class SkillsValidatorTests(unittest.TestCase):

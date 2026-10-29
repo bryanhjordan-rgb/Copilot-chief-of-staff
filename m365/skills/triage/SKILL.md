@@ -8,7 +8,7 @@ description: >-
   urgent?", "triage quick". Do not use for a single known email the user wants
   answered (just draft it) or for adding one item (intake).
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   tier: "native"
   signatures: "triage|inbox|self"
   tools: "work-iq, outlook, teams, excel"
@@ -30,7 +30,7 @@ Every message that needs the user is surfaced once, ranked, and either has a sen
    - Outlook: messages to the user (To, not just CC) in the window, unread or unreplied. Skip newsletters, automated notifications, and calendar responses.
    - Teams: 1:1 and group chats with unread messages addressed to the user, plus @mentions in channels.
 3. **Already handled?** Drop a message when the user has replied on the thread or chat since it arrived, or when it matches an open item's SourceLink. If it matches an open item, mention the item instead of re-surfacing the message.
-4. **Key people.** Treat a sender as key if they're in the People cell of any open P1/P2 item, are the user's manager or a direct report (Work IQ people), or are named in the instructions' constraints or tone section. **[judgment]** for anyone else senior.
+4. **Key people.** Treat a sender as key if they're in the People cell of any open P1/P2 item, are the user's manager or a direct report (Work IQ people), or are listed on the "Key people" line of the instructions. **[judgment]** for anyone else senior.
 5. **Tier** each message:
    | Tier | Rule |
    |------|------|
