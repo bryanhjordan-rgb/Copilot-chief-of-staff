@@ -20,3 +20,5 @@ jobs:
       - run: pip install pyyaml openpyxl
       - run: python3 m365/scripts/skills.py validate
       - run: python3 m365/scripts/build_workbook.py "$RUNNER_TEMP/ChiefOfStaff.xlsx"
+      - run: python3 m365/scripts/lint_workbook.py m365/workbook/ChiefOfStaff.xlsx
+      - run: python3 -m unittest discover -s m365/tests -v

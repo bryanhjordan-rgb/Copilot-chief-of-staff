@@ -85,6 +85,7 @@ Run these in order. After each one, open the workbook and check the result.
 - *"Table not found"* → the Table input isn't AI-filled, or the name was typed as the sheet name (`List`) instead of the table name (`Items`).
 - *Dates come back as numbers* → DateTime Format isn't set to ISO 8601 on the read tools.
 - *"The file is locked"* → you have it open mid-edit, or the connector used it within the last ~6 minutes. Close it and retry.
+- *Anything else looks off in the sheet* → download it and run `python3 m365/scripts/lint_workbook.py ChiefOfStaff.xlsx`.
 - *Agent invents links* → tighten intake step 4 and log the failure in the iteration log. Don't patch the instructions ad hoc.
 
 ## Step 7 — Publish (5 min)

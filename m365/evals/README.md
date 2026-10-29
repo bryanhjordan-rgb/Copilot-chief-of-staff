@@ -21,7 +21,8 @@ Scenario tests for each skill. Run them before importing a changed skill, and wh
    - **Pass:** every `expect` and `workbook` line holds, and no `must_not` line happens
    - **Partial:** one `expect` line misses, but no `must_not` happens
    - **Fail:** any `must_not` happens, or two or more `expect` lines miss
-5. Record the run in `results/YYYY-MM-DD-<model>.md` (template below).
+5. Download the test workbook and run `python3 m365/scripts/lint_workbook.py ChiefOfStaff-test.xlsx`. Any ERROR fails the case that wrote that row.
+6. Record the run in `results/YYYY-MM-DD-<model>.md` (template below).
 
 **Bar to import a changed skill:** no Fail, and at most 1 Partial in that skill's file.
 

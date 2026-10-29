@@ -31,10 +31,12 @@ m365/
 ├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
+├── tests/                      # unittest suite for the scripts
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
 └── scripts/
     ├── skills.py               # validate + package skills for import
-    └── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
+    ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
+    └── lint_workbook.py        # check a live workbook against schema + cell conventions
 ```
 
 ## Working with skills
@@ -55,7 +57,15 @@ python3 m365/scripts/build_workbook.py    # → m365/workbook/ChiefOfStaff.xlsx
 
 Upload `ChiefOfStaff.xlsx` to OneDrive (`/Apps/ChiefOfStaff/`). The **List** sheet is the daily list. Goals, Skills, and Feedback support prioritization and the learning loop. Change columns in `schema/workbook.yaml` and rebuild; don't edit the headers by hand. Layout and connector rules: [03-data-model.md](docs/03-data-model.md).
 
-CI runs `validate` and a workbook build on every PR that touches `m365/`.
+Check a live copy at any time (download it from OneDrive first):
+
+```bash
+python3 m365/scripts/lint_workbook.py ~/Downloads/ChiefOfStaff.xlsx
+```
+
+It flags rows that would trip up the agent or skew the metrics: Open/Status out of sync, malformed links or dates, done items missing a signature, confidential items with notes, broken Goal/Skill references. It also prints the share of open items with at least one link (the Phase 1 exit metric).
+
+CI runs `validate`, a workbook build, the linter, and `python3 -m unittest discover -s m365/tests` on every PR that touches `m365/`.
 
 ## Start here
 

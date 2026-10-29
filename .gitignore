@@ -24,3 +24,6 @@ local/
 
 # Packaged skill zips (build output of m365/scripts/skills.py package)
 dist/
+
+# Python
+__pycache__/
