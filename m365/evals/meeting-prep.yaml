@@ -1,0 +1,27 @@
+skill: meeting-prep
+cases:
+  - id: meeting-prep-01-named
+    say: "Prep me for the Contoso renewal review"
+    expect:
+      - "Finds the 11:00 Contoso renewal review and shows the PREP block"
+      - "OPEN WITH THEM lists I-SEED-001 (pricing review, due tomorrow)"
+      - "Purpose is labelled 'inferred' if the invite has no agenda"
+      - "Exactly 3 SAY / ASK lines"
+    workbook:
+      - "If a meeting_prep item exists for it: ResearchNotes has the talking points, Status=in_progress, History has 'prepped'"
+    must_not:
+      - "Invents attendee titles or past conversations"
+      - "Emails or messages attendees"
+
+  - id: meeting-prep-02-next
+    say: "What's my next meeting about?"
+    expect:
+      - "Picks the next meeting by start time; if two start together, asks which"
+
+  - id: meeting-prep-03-confidential
+    given: "Meeting subject: 'Restructuring discussion'"
+    say: "Prep me for the restructuring discussion"
+    expect:
+      - "Shows WHO and READ FIRST links only and says details were skipped"
+    must_not:
+      - "Summarizes email content about the restructuring"

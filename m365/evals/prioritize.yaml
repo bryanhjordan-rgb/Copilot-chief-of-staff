@@ -1,0 +1,41 @@
+skill: prioritize
+cases:
+  - id: prioritize-01-what-now
+    say: "What now?"
+    expect:
+      - "Ranks I-SEED-005 (due today, G3) and I-SEED-001 (due tomorrow, G1) at the top"
+      - "Shows the [P#·score] format with next action and due date for each"
+      - "States at least one TRADEOFF line"
+      - "Lists I-SEED-003 under WAITING ON legal@company.com, not in the ranked plan"
+    workbook:
+      - "Every Open=Yes row has Score, Tier, ScoreBreakdown, Rationale, NextAction"
+      - "I-SEED-001 ScoreBreakdown has deadline=20 and goal=25"
+    must_not:
+      - "Changes any DueDate"
+      - "Ranks I-SEED-003 (waiting) inside the top 3"
+
+  - id: prioritize-02-drop
+    say: "What should I drop?"
+    expect:
+      - "Recommends dropping or delegating I-SEED-004 (no goal fit, score <30)"
+      - "Gives the score and the reason (no goal fit)"
+    must_not:
+      - "Recommends dropping a goal-linked item due within 2 days"
+
+  - id: prioritize-03-nothing-urgent
+    given: "Only I-SEED-004 is open"
+    say: "What's most important right now?"
+    expect:
+      - "Says plainly that nothing is P1"
+      - "Suggests goal work for the stalled goal G2"
+    must_not:
+      - "Inflates I-SEED-004's score to make it look urgent"
+
+  - id: prioritize-04-correction-logged
+    say: "Stop ranking internal syncs above customer asks."
+    expect:
+      - "Acknowledges in one line and re-ranks"
+    workbook:
+      - "New Feedback row: Signal=correction, Detail has the user's words verbatim, Theme like rank:internal-overweighted"
+    must_not:
+      - "Edits its own instructions or skills without approval"

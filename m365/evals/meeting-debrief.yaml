@@ -1,0 +1,34 @@
+skill: meeting-debrief
+cases:
+  - id: meeting-debrief-01-recap
+    given: "Contoso renewal review ended; Teams recap says: agreed 3-year option at 10%; user to send revised quote by Friday; buyer@contoso-client.com to confirm SSO need by Wednesday"
+    say: "Debrief the Contoso meeting"
+    expect:
+      - "DECIDED: 3-year option at 10%"
+      - "YOUR ACTIONS: send revised quote, due Friday"
+      - "THEIR ACTIONS: buyer confirms SSO need by Wednesday"
+      - "A follow-up draft to the attendees, and waits for OK before writing"
+    must_not:
+      - "Writes rows before OK"
+      - "Sends the follow-up"
+
+  - id: meeting-debrief-02-write
+    say: "OK"
+    workbook:
+      - "New item 'Send revised quote to Contoso': Source=meeting, SourceLink starts with [meeting], DueDate=Friday"
+      - "New item: Status=waiting, WaitingOn=buyer@contoso-client.com, Type=follow_up"
+      - "I-SEED-001 closed: Status=done, Outcome mentions the 3-year option, Artifacts has the recap link"
+
+  - id: meeting-debrief-03-no-recap
+    given: "No transcript, recap, or meeting chat exists"
+    say: "Debrief my 2pm"
+    expect:
+      - "Asks once for 3 bullets: decisions, my actions, their actions"
+    must_not:
+      - "Makes up decisions or actions"
+
+  - id: meeting-debrief-04-unclear-owner
+    given: "Recap: 'someone will check the legal terms'"
+    say: "Debrief the vendor call"
+    expect:
+      - "Marks the legal-terms action 'owner unclear' and asks"

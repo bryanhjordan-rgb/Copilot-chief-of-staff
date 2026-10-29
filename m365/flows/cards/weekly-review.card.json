@@ -1,0 +1,44 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "{{REVIEW_TITLE}}",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "{{REVIEW_MARKDOWN}}",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "decisions",
+      "placeholder": "Decide per proposal, e.g. approve 1, reject 2, edit 3: shorten step 2",
+      "isMultiline": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit decisions",
+      "style": "positive",
+      "data": {"action": "decide", "reviewDate": "{{REVIEW_DATE}}"}
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Approve all",
+      "data": {"action": "approve_all", "reviewDate": "{{REVIEW_DATE}}"}
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Reject all",
+      "style": "destructive",
+      "data": {"action": "reject_all", "reviewDate": "{{REVIEW_DATE}}"}
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+# Agent configuration — what to set in Copilot Studio.
+# Copilot Studio is configured through the UI. This file is the checklist and
+# the record of intent; keep it in sync with what's deployed.
+
+agent:
+  name: "Chief of Staff"
+  description: "Prioritizes your day, investigates new items, reconciles completed work, and proposes skills from repeated work."
+  orchestration: github-copilot-harness   # R4; fallback: generative orchestration (classic)
+  primary_model: claude-sonnet-5          # Q4: A/B against gpt-5.5-chat for one week each
+  instructions_file: agent/instructions.md
+  instruction_char_limit: 8000            # enforced by scripts/skills.py check-instructions
+  memory: enabled                         # preview; preferences across conversations
+  channels: [microsoft-365-copilot, teams]
+  entra_agent_id: auto                    # created automatically since July 2026
+
+skills:                                   # native skills; import zips from dist/skills/
+  - prioritize
+  - intake
+  - daily-brief
+  - reconcile        # phase 2
+  - skill-miner      # phase 3
+  - triage           # phase 2 (optional earlier: read + draft only)
+  - meeting-prep     # phase 2
+  - meeting-debrief  # phase 2 (needs Teams recap/transcript via Work IQ, or pasted notes)
+  - relationship-check  # phase 2 (People sheet)
+
+knowledge:
+  - type: work-iq                         # R6 (preview); fallback: outlook/teams connectors below
+    scopes: [mail, calendar, files, teams, people]
+
+store:                                    # ADR-006 — Excel workbook, built from schema/workbook.yaml
+  file: "OneDrive: /Apps/ChiefOfStaff/ChiefOfStaff.xlsx"
+  location: me
+  document_library: OneDrive
+  tables: {Items: ID, Goals: ID, Skills: Name, Feedback: ID, People: Email}   # table: key column
+
+tools:
+  excel:                                  # Excel Online (Business) connector — add each action as a tool
+    connector: excelonlinebusiness
+    actions:
+      - name: list_rows                   # List rows present in a table
+        settings: {dateTimeFormat: ISO 8601, pagination: on}
+        note: "One filter function per column. Open items: Open eq 'Yes'. Active skills: Status eq 'active'."
+      - name: get_row                     # Get a row (key column per table above)
+      - name: add_row                     # Add a row into a table
+      - name: update_row                  # Update a row — blank inputs leave cells unchanged
+    confirmation: none                    # internal state; no outbound effect
+    limits: "100 calls/min per connection; writes visible after up to 30 s; file lock up to 6 min after connector use"
+  outlook:
+    connector: office365-outlook          # or Outlook MCP (Agent 365) if allowed (R7)
+    operations: [search, get_message, get_calendar_view, create_draft, send]
+    confirmation: required                # ADR-005 — every send asks the user
+  teams:
+    operations: [search_messages, get_chat, post_adaptive_card, post_message]
+    confirmation: required_for: [post_message]   # brief card from workflow is the only auto-post (to the user's own chat)
+  planner:
+    connector: planner-mcp                # optional mirror (Q5); basic plans only
+    enabled: false
+
+triggers:                                 # see m365/flows/
+  - name: daily-brief
+    type: recurrence
+    schedule: "Mon–Fri 07:00 {{TIMEZONE}}"
+    flow: flows/daily-brief.md
+  - name: completion-detector
+    type: recurrence
+    schedule: "Mon–Fri every 2h 09:00–17:00"
+    flow: flows/completion-detector.md
+  - name: weekly-skill-review
+    type: recurrence
+    schedule: "Fri 15:00"
+    flow: flows/weekly-skill-review.md

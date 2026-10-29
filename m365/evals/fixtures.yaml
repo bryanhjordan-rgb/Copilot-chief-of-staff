@@ -1,0 +1,38 @@
+# Seed state for eval runs. Load it into a copy of ChiefOfStaff.xlsx
+# (Goals + Items) before running the cases. Dates assume the run day is
+# "TODAY"; shift them so relative deadlines still hold.
+
+constraints: {home_by: "17:30", earliest_meeting: "08:30"}
+
+goals:
+  - {ID: G1, Goal: "Close Q4 enterprise renewals", Priority: 1, Status: on_track, LastUpdate: "TODAY-3"}
+  - {ID: G2, Goal: "Ship 2027 budget plan", Priority: 2, Status: at_risk, LastUpdate: "TODAY-9"}
+  - {ID: G3, Goal: "Hire two analysts", Priority: 3, Status: on_track, LastUpdate: "TODAY-2"}
+
+items:
+  - {ID: I-SEED-001, Open: "Yes", Status: triaged, Title: "Prep pricing review for Contoso renewal", Goal: G1, DueDate: "TODAY+1", EffortMin: 60, Energy: deep, Type: meeting_prep,
+     People: "ae@contoso.com", Created: "TODAY-2", SourceLink: "[email] RE: Contoso pricing | https://outlook.office.com/mail/seed1"}
+  - {ID: I-SEED-002, Open: "Yes", Status: triaged, Title: "Draft 2027 budget assumptions", Goal: G2, DueDate: "TODAY+5", EffortMin: 90, Energy: deep, Type: task, Created: "TODAY-10"}
+  - {ID: I-SEED-003, Open: "Yes", Status: waiting, Title: "Get legal sign-off on vendor MSA", WaitingOn: "legal@company.com", DueDate: "TODAY+3", Type: follow_up, Created: "TODAY-6"}
+  - {ID: I-SEED-004, Open: "Yes", Status: triaged, Title: "Reorganize team SharePoint folders", EffortMin: 45, Energy: shallow, Type: task, Created: "TODAY-20"}
+  - {ID: I-SEED-005, Open: "Yes", Status: triaged, Title: "Review analyst candidate shortlist", Goal: G3, DueDate: "TODAY", EffortMin: 30, Energy: shallow, Type: review, Created: "TODAY-1"}
+  - {ID: I-SEED-006, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 35, CompletedOn: "TODAY-7",
+     Steps: "collect updates | teams | 15\ndraft status | outlook | 15\nsend | outlook | 5"}
+  - {ID: I-SEED-007, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 40, CompletedOn: "TODAY-14",
+     Steps: "collect updates | teams | 20\ndraft status | outlook | 15\nsend | outlook | 5"}
+  - {ID: I-SEED-008, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 30, CompletedOn: "TODAY-21",
+     Steps: "collect updates | teams | 12\ndraft status | outlook | 13\nsend | outlook | 5"}
+
+people:
+  - {Email: "sam.lee@company.com", Name: "Sam Lee", Tier: "1", Role: "Manager", LastContact: "TODAY-3", LastChannel: teams}
+  - {Email: "ae@contoso.com", Name: "Alex Kim", Tier: "2", Role: "Account exec, Contoso", LastContact: "TODAY-12", LastChannel: email}
+  - {Email: "mentor@example.org", Name: "Dana Ortiz", Tier: "1", Role: "Mentor (former VP)", LastContact: "TODAY-21", LastChannel: in_person,
+     Notes: "Moving to Lisbon in December (added 2026-09-30)\nRecommended 'Working Backwards' (added 2026-09-30)"}
+  - {Email: "peer@fabrikam.com", Name: "Jordan Wu", Tier: "3", Role: "Ops lead, Fabrikam", LastContact: "TODAY-58", LastChannel: meeting}
+  - {Email: "old.colleague@example.net", Name: "Riley Shah", Tier: "2", Role: "Former colleague", LastContact: "TODAY-45", LastChannel: email}
+
+calendar_today:
+  - {start: "09:00", end: "09:30", title: "Team standup"}
+  - {start: "11:00", end: "12:00", title: "Contoso renewal review", attendees: ["ae@contoso.com", "buyer@contoso-client.com"]}
+  - {start: "14:00", end: "14:30", title: "1:1 with manager"}
+  - {start: "17:30", end: "18:30", title: "Late vendor call"}   # conflicts with home-by 17:30 constraint

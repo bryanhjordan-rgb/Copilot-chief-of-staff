@@ -21,3 +21,12 @@ cache/
 local/
 *.local.md
 *.local.yaml
+
+# Packaged skill zips (build output of m365/scripts/skills.py package)
+dist/
+
+# Python
+__pycache__/
+
+# Personal agent profile (copy of m365/agent/profile.example.yaml)
+m365/agent/profile.yaml
