@@ -18,8 +18,10 @@ resolving TODAY, TODAY+n and TODAY-n against --today (default: the real date).
 """
 
 import argparse
+import io
 import re
 import sys
+import zipfile
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -47,7 +49,7 @@ GROUP_COLORS = {
     None: "1F4E79",
 }
 NUMERIC_TYPES = {"int", "decimal"}
-FIXED_TIMESTAMP = datetime(2026, 1, 1)  # keeps rebuilt files byte-stable
+FIXED_TIMESTAMP = datetime(2026, 1, 1)  # keeps rebuilt files byte-stable (see normalize)
 
 # One fully worked row so the format of every multi-line cell is visible.
 # Open=No keeps it out of the agent's "Open eq 'Yes'" queries.
@@ -182,8 +184,28 @@ def build(out_path, goals_path=None, fixtures_path=None, today=None):
     add_guide(wb, schema)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    wb.save(out_path)
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    out_path.write_bytes(normalize(buffer.getvalue()))
     print(f"wrote {out_path}")
+
+
+def normalize(xlsx_bytes):
+    """Pin save-time timestamps so rebuilding an unchanged schema gives identical bytes.
+
+    openpyxl stamps docProps 'modified' and each zip entry with the current time.
+    """
+    stamp = FIXED_TIMESTAMP.strftime("%Y-%m-%dT%H:%M:%SZ")
+    out = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(xlsx_bytes)) as src, zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as dst:
+        for info in src.infolist():
+            data = src.read(info.filename)
+            if info.filename == "docProps/core.xml":
+                data = re.sub(rb"(<dcterms:modified[^>]*>)[^<]*", rb"\g<1>" + stamp.encode(), data)
+            entry = zipfile.ZipInfo(info.filename, date_time=FIXED_TIMESTAMP.timetuple()[:6])
+            entry.compress_type = zipfile.ZIP_DEFLATED
+            dst.writestr(entry, data)
+    return out.getvalue()
 
 
 def add_table(wb, table_name, spec, rows):

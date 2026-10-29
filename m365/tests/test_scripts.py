@@ -5,6 +5,7 @@ import json
 import shutil
 import subprocess
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -60,6 +61,7 @@ class BuildWorkbookTests(WorkbookTestCase):
         self.assertEqual(wb["List"]["A1"].value, "ID")
 
     def test_rebuild_is_byte_stable(self):
+        time.sleep(1.1)  # cross a second boundary: save-time stamps must not leak in
         second = self.tmp / "second.xlsx"
         build_workbook.build(second)
         self.assertEqual(self.path.read_bytes(), second.read_bytes())
