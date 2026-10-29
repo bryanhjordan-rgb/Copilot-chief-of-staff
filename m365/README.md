@@ -28,6 +28,7 @@ m365/
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
 │   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/  triage/
+│   ├── meeting-prep/  meeting-debrief/
 ├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive

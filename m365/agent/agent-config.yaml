@@ -20,6 +20,8 @@ skills:                                   # native skills; import zips from dist
   - reconcile        # phase 2
   - skill-miner      # phase 3
   - triage           # phase 2 (optional earlier: read + draft only)
+  - meeting-prep     # phase 2
+  - meeting-debrief  # phase 2 (needs Teams recap/transcript via Work IQ, or pasted notes)
 
 knowledge:
   - type: work-iq                         # R6 (preview); fallback: outlook/teams connectors below

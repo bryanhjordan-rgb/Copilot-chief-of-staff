@@ -7,7 +7,7 @@ description: >-
   "morning brief", "what does today look like", "re-plan", and the scheduled
   07:00 run. Do not use for adding a single item (intake).
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
   tier: "native"
   signatures: "plan|day|self"
   tools: "excel, work-iq, outlook-calendar"
@@ -29,7 +29,7 @@ The user knows the 3 outcomes that matter today, when they'll do them, and what 
 3. **Overnight intake (light).** Quick Work IQ scan of mail and Teams since the last brief for explicit asks with deadlines aimed at the user. Don't create items yet; list up to 3 as "suggested adds".
 4. **Rank.** Run the prioritize skill on all open items.
 5. **Top 3.** Pick the 3 highest-scoring items that fit today's free blocks. Prefer items due ≤2 days or linked to a priority-1 goal. **[judgment]** If a P1 can't fit, say what meeting or item would have to move.
-6. **Plan.** Assign items to free blocks: deep work into the longest morning blocks, shallow work into short gaps. Put meeting prep in the block before the meeting.
+6. **Plan.** Assign items to free blocks: deep work into the longest morning blocks, shallow work into short gaps. Put meeting prep in the block before the meeting, and offer "say 'prep me for <meeting>'" (meeting-prep skill).
 7. **Goals pulse.** `list_rows(Goals)`. Name any priority-1/2 goal with no item planned today, or with LastUpdate 7+ days ago.
 8. **Drop/delegate.** Up to 3 items with score <30 and no goal fit.
 9. **Write back.** For each planned item, `update_row(Items, ID)` with DoDate=today, PlannedSlot (`HH:MM-HH:MM`), Status=scheduled (unless in_progress), Updated, and append `<now> agent scheduled <slot>` to History.

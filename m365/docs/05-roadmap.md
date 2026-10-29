@@ -38,6 +38,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 - [ ] Workflow: daily brief at 07:00 → Teams adaptive card (`flows/daily-brief.md`)
 - [ ] Import `reconcile` skill. Manual trigger first ("done with X")
 - [ ] Import `triage` skill (read + draft only; sends need "Send")
+- [ ] Import `meeting-prep` and `meeting-debrief`; daily brief points prep-needed meetings at meeting-prep
 - [ ] Workflow: completion detector (`flows/completion-detector.md`): linked thread replied / meeting ended / Planner task completed → ask "Mark complete?"
 - [ ] Feedback capture on the brief card (Accept/Edit/Re-plan → Feedback row)
 
@@ -59,7 +60,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 - [x] CI: GitHub Action runs `scripts/skills.py validate` and builds the workbook on PRs
 - [x] Port `/triage` (Outlook + Teams) as a skill
 - [ ] Port `/enrich` (people context) as a skill
-- [ ] Meeting prep / debrief skills (uses Teams meeting recap via Work IQ)
+- [x] Meeting prep / debrief skills (uses Teams meeting recap via Work IQ)
 - [ ] Metrics view: weekly scorecard from Items, Skills, and Feedback (a Summary sheet, or Power BI on the workbook)
 - [ ] Revisit ADR-006: migrate to Dataverse/SharePoint Lists if Excel limits bite
 - [ ] Optional: Planner/To Do mirror for mobile visibility
@@ -79,3 +80,4 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 | 7 | 2026-10-29 | Adaptive Cards 1.5 for the daily brief (Accept / Send edit / Re-plan), weekly review (decide / approve all / reject all), and completion confirmation (Mark complete / Not yet), with token + response mapping. Flows wired to them; daily-brief and skill-miner return card-safe markdown when scheduled; reconcile skips re-asking after card confirmation (+1 eval). Card tests. | Office Script for mining |
 | 8 | 2026-10-29 | `mine-signatures` Office Script (groups done items by signature in the window; count, avg minutes, weekly/monthly cadence, ⅔ common steps, automation fit, score, est. saved, evidence; excludes active skills) + Python twin `mine.py`; parity test compiles the TS with tsc and compares outputs under Node. Weekly flow runs it before the agent; skill-miner 0.2.2 consumes it. | Triage skill |
 | 9 | 2026-10-29 | `triage` skill (Outlook + Teams): 3 tiers, already-handled and open-item dedupe, key-person rule from P1/P2 People, confidentiality check, calendar-verified scheduling drafts, Send/Draft/Track/Edit actions, draft edits logged as Feedback; 5 evals; added to instructions routing. CI actions bumped to checkout@v5 / setup-python@v6 (Node 20 deprecation). | Meeting prep/debrief skills |
+| 10 | 2026-10-29 | `meeting-prep` (purpose, outcome, attendee context, open items/promises, last recap, docs, risks, 3 talking points; writes to the meeting_prep item) and `meeting-debrief` (recap/transcript → decisions, my actions → items, their actions → waiting-on items, closes prep item, follow-up draft; writes only after OK). 7 evals. Daily brief offers prep. | Instructions renderer from a profile |
