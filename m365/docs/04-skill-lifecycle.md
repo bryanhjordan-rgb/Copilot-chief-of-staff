@@ -50,6 +50,8 @@ A pattern becomes a **candidate** when any of these hold over a rolling 30 days:
 | Fixed cadence detected (weekly/monthly) | ≥2 cycles |
 | Same correction repeated | ≥2 times → **instruction/skill patch** proposal, not a new skill |
 
+Counting and grouping run deterministically in the [`mine-signatures` Office Script](../office-scripts/README.md), with a tested Python twin in `scripts/mine.py`. The agent only drafts and judges.
+
 Candidates are ranked by `frequency × avg_minutes × automation_fit` (automation_fit 0–1: how many steps are tool calls vs. judgment calls).
 
 ## 4. Proposal format

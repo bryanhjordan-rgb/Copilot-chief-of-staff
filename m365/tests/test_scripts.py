@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -22,6 +23,7 @@ def load(name):
 skills = load("skills")
 build_workbook = load("build_workbook")
 lint_workbook = load("lint_workbook")
+mine = load("mine")
 
 
 class WorkbookTestCase(unittest.TestCase):
@@ -167,6 +169,81 @@ class CardTests(unittest.TestCase):
                 self.assertEqual(submitted, actions)
                 for action in actions:
                     self.assertIn(f"`{action}`", readme)
+
+
+def done(item_id, signature, completed_on, minutes, steps, status="done"):
+    return {"ID": item_id, "Status": status, "Signature": signature, "CompletedOn": completed_on,
+            "MinutesSpent": minutes, "Steps": steps}
+
+
+STATUS_STEPS = "collect updates | teams | 15\ndraft status | outlook | 15\nsend | outlook | 5"
+MINING_ITEMS = [
+    done("I-1", "send|weekly-status|leadership", "2026-10-22T16:00", "35", STATUS_STEPS),
+    done("I-2", "send|weekly-status|leadership", "2026-10-15T16:00", "40", STATUS_STEPS),
+    done("I-3", "send|weekly-status|leadership", "2026-10-08T16:00", "30",
+         "collect updates | teams | 12\nreview with manager | meeting | 10\nsend | outlook | 5"),
+    done("I-4", "prepare|pricing-review|customer", "2026-10-20T10:00", "30",
+         "read thread | outlook | 10\ndecide discount | judgment | 10"),
+    done("I-5", "prepare|pricing-review|customer", "2026-10-03T10:00", "34.5",
+         "read thread | outlook | 12\ndecide discount | judgment | 12"),
+    done("I-6", "review|contract|legal", "2026-10-21T09:00", "15", "read | word | 15"),
+    done("I-7", "file|expenses|self", "2026-10-25T09:00", "10", "upload | concur | 10"),
+    done("I-8", "file|expenses|self", "2026-10-18T09:00", "10", "upload | concur | 10"),
+    done("I-9", "file|expenses|self", "2026-10-11T09:00", "10", "upload | concur | 10"),
+    done("I-10", "send|weekly-status|leadership", "2026-08-01T16:00", "35", STATUS_STEPS),  # outside window
+    done("I-11", "send|weekly-status|leadership", "2026-10-27T16:00", "35", STATUS_STEPS, status="in_progress"),
+    done("I-EXAMPLE", "send|weekly-status|leadership", "2026-10-28T16:00", "35", STATUS_STEPS),  # template row
+]
+MINING_SKILLS = [
+    {"Name": "file-expenses", "Status": "active", "Signatures": "file|expenses|self"},
+    {"Name": "old-skill", "Status": "retired", "Signatures": "review|contract|legal"},
+]
+
+
+class MiningTests(unittest.TestCase):
+    OFFICE_SCRIPTS = Path(__file__).resolve().parent.parent / "office-scripts"
+
+    def test_reference_mining(self):
+        result = mine.mine(MINING_ITEMS, MINING_SKILLS, "2026-10-29", 30)
+        self.assertEqual(result["itemsConsidered"], 9)
+        self.assertEqual(result["coveredBySkills"], ["file|expenses|self"])
+        by_sig = {c["signature"]: c for c in result["candidates"]}
+        self.assertEqual(set(by_sig), {"send|weekly-status|leadership", "prepare|pricing-review|customer"})
+
+        status = by_sig["send|weekly-status|leadership"]
+        self.assertEqual(status["count"], 3)
+        self.assertEqual(status["avgMinutes"], 35)
+        self.assertEqual(status["cadence"], "weekly")
+        self.assertEqual(status["evidence"], ["I-1", "I-2", "I-3"])  # newest first
+        # "draft status" is in 2 of 3 items (kept); "review with manager" in 1 of 3 (dropped)
+        self.assertEqual(status["commonSteps"], ["collect updates | teams", "draft status | outlook", "send | outlook"])
+        self.assertEqual(status["automationFit"], 1)
+
+        pricing = by_sig["prepare|pricing-review|customer"]
+        self.assertEqual(pricing["avgMinutes"], 32.3)  # half-up like Math.round, not banker's 32.2
+        self.assertEqual(pricing["automationFit"], 0.5)  # judgment step doesn't count
+        self.assertEqual(pricing["cadence"], "none")  # qualifies on count 2 + avg >= 20
+
+    def test_office_script_matches_reference(self):
+        if not shutil.which("tsc") or not shutil.which("node"):
+            self.skipTest("tsc/node not installed")
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            subprocess.run(
+                ["tsc", "--strict", "--target", "ES2019", "--lib", "ES2019", "--outDir", str(tmp),
+                 str(self.OFFICE_SCRIPTS / "excelscript.d.ts"), str(self.OFFICE_SCRIPTS / "mine-signatures.ts")],
+                check=True, capture_output=True, text=True,
+            )
+            for window in (30, 7, 90):
+                with self.subTest(window=window):
+                    payload = {"call": "mine", "args": [MINING_ITEMS, MINING_SKILLS, "2026-10-29", window]}
+                    out = subprocess.run(
+                        ["node", str(Path(__file__).parent / "run_office_script.js"), str(tmp / "mine-signatures.js")],
+                        input=json.dumps(payload), check=True, capture_output=True, text=True,
+                    ).stdout
+                    self.assertEqual(json.loads(out), mine.mine(MINING_ITEMS, MINING_SKILLS, "2026-10-29", window))
+        finally:
+            shutil.rmtree(tmp)
 
 
 class SkillsValidatorTests(unittest.TestCase):

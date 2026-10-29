@@ -18,6 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml openpyxl
+      - run: npm install -g typescript@5.6.3  # Office Script parity test
       - run: python3 m365/scripts/skills.py validate
       - run: python3 m365/scripts/build_workbook.py "$RUNNER_TEMP/ChiefOfStaff.xlsx"
       - run: python3 m365/scripts/lint_workbook.py m365/workbook/ChiefOfStaff.xlsx

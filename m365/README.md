@@ -32,12 +32,14 @@ m365/
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
 ├── tests/                      # unittest suite for the scripts
+├── office-scripts/             # TypeScript run inside the workbook (deterministic skill mining)
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
 │   └── cards/                  # Adaptive Card templates the flows post to Teams
 └── scripts/
     ├── skills.py               # validate + package skills for import
     ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
-    └── lint_workbook.py        # check a live workbook against schema + cell conventions
+    ├── lint_workbook.py        # check a live workbook against schema + cell conventions
+    └── mine.py                 # reference implementation of the mining Office Script
 ```
 
 ## Working with skills
