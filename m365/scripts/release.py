@@ -83,7 +83,7 @@ Full walkthrough: `m365/docs/08-build-guide.md`. Day-to-day use: `m365/docs/09-d
 - [ ] Flow: completion detector with `cards/completion-confirm.card.json`
 
 ## Phase 3 (learning loop)
-- [ ] Excel › Automate › New Script: paste `office-scripts/mine-signatures.ts`, save as `mine-signatures`
+- [ ] Excel › Automate › New Script: paste `office-scripts/mine-signatures.ts`, save as `mine-signatures`; same for `weekly-scorecard.ts`
 - [ ] Skills › Upload: `skills/skill-miner.zip`
 - [ ] Flow: weekly skill review with `cards/weekly-review.card.json`
 

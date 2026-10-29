@@ -35,7 +35,7 @@ m365/
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
 ├── tests/                      # unittest suite for the scripts
-├── office-scripts/             # TypeScript run inside the workbook (deterministic skill mining)
+├── office-scripts/             # TypeScript run inside the workbook (skill mining, weekly scorecard)
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
 │   └── cards/                  # Adaptive Card templates the flows post to Teams
 └── scripts/
@@ -43,6 +43,7 @@ m365/
     ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
     ├── lint_workbook.py        # check a live workbook against schema + cell conventions
     ├── mine.py                 # reference implementation of the mining Office Script
+    ├── scorecard.py            # reference implementation of the weekly-scorecard Office Script
     ├── render_instructions.py  # profile.yaml → dist/instructions.md (paste into Copilot Studio)
     └── release.py              # one-command deployment kit → dist/ChiefOfStaff-kit.zip
 ```

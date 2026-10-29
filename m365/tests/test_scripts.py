@@ -25,6 +25,9 @@ skills = load("skills")
 build_workbook = load("build_workbook")
 lint_workbook = load("lint_workbook")
 mine = load("mine")
+import sys as _sys
+_sys.path.insert(0, str(SCRIPTS))  # scorecard imports mine
+scorecard = load("scorecard")
 render_instructions = load("render_instructions")
 release = load("release")
 
@@ -346,6 +349,70 @@ class ReleaseKitTests(unittest.TestCase):
     def test_kit_without_profile_is_flagged(self):
         kit = release.build_kit(None)
         self.assertIn("**NOT rendered**: still has {{PLACEHOLDERS}}", (kit / "CHECKLIST.md").read_text(encoding="utf-8"))
+
+
+SC_ITEMS = [
+    {"ID": "I-1", "Status": "done", "Open": "No", "CompletedOn": "2026-10-28T10:00", "DueDate": "2026-10-29",
+     "Goal": "G1", "MinutesSpent": "40", "Outcome": "x", "Steps": "a | b | 1", "Signature": "a|b|c"},
+    {"ID": "I-2", "Status": "done", "Open": "No", "CompletedOn": "2026-10-30T09:00", "DueDate": "2026-10-29",
+     "Goal": "G1", "MinutesSpent": "20.5", "Outcome": "x", "Steps": "", "Signature": "a|b|c"},  # late, no steps
+    {"ID": "I-3", "Status": "done", "Open": "No", "CompletedOn": "2026-10-27T09:00", "MinutesSpent": "15"},
+    {"ID": "I-4", "Status": "done", "Open": "No", "CompletedOn": "2026-10-10T09:00", "DueDate": "2026-10-11"},  # outside 7d
+    {"ID": "I-5", "Status": "triaged", "Open": "Yes", "SourceLink": "[email] x | https://x"},
+    {"ID": "I-6", "Status": "waiting", "Open": "Yes"},
+    {"ID": "I-7", "Status": "scheduled", "Open": "Yes", "ContextLinks": "[file] y | https://y"},
+    {"ID": "I-EXAMPLE", "Status": "done", "Open": "No", "CompletedOn": "2026-10-29T09:00"},
+    {"ID": "", "Status": "done"},
+]
+SC_SKILLS = [
+    {"Name": "send-weekly-status", "Status": "active", "EstMinSaved": "25"},
+    {"Name": "prep-pricing", "Status": "proposed", "EstMinSaved": "20"},
+]
+SC_FEEDBACK = [
+    {"ID": "F-1", "Date": "2026-10-28T07:10", "TargetType": "brief", "TargetRef": "2026-10-28", "Signal": "accept"},
+    {"ID": "F-2", "Date": "2026-10-29T07:10", "TargetType": "brief", "TargetRef": "2026-10-29", "Signal": "edit"},
+    {"ID": "F-3", "Date": "2026-10-29T07:30", "TargetType": "brief", "TargetRef": "2026-10-29", "Signal": "accept"},
+    {"ID": "F-4", "Date": "2026-10-30T16:00", "TargetType": "skill_run", "TargetRef": "send-weekly-status", "Signal": "success"},
+    {"ID": "F-5", "Date": "2026-10-23T16:00", "TargetType": "skill_run", "TargetRef": "send-weekly-status", "Signal": "success"},
+    {"ID": "F-6", "Date": "2026-10-30T17:00", "TargetType": "skill_run", "TargetRef": "send-weekly-status", "Signal": "partial"},
+]
+
+
+class ScorecardTests(unittest.TestCase):
+    OFFICE_SCRIPTS = Path(__file__).resolve().parent.parent / "office-scripts"
+
+    def test_reference_scorecard(self):
+        result = scorecard.scorecard(SC_ITEMS, SC_SKILLS, SC_FEEDBACK, "2026-10-30", 7)
+        self.assertEqual(result["itemsCompleted"], 3)          # I-1..I-3; I-4 outside, example and blank excluded
+        self.assertEqual(result["onTimePct"], 50)              # I-1 on time, I-2 late; I-3 has no due date
+        self.assertEqual(result["completionRecordPct"], 33)    # only I-1 has outcome+steps+signature
+        self.assertEqual((result["openItems"], result["linkCoveragePct"]), (3, 67))
+        self.assertEqual(result["minutesByGoal"], {"G1": 60.5, "none": 15})
+        self.assertEqual((result["briefDays"], result["briefAcceptedDays"]), (2, 2))
+        self.assertEqual((result["skillsActive"], result["skillsProposed"]), (1, 1))
+        self.assertEqual((result["skillRuns"], result["skillRunSuccessPct"]), (2, 50))  # F-5 is outside the window
+        self.assertEqual(result["estMinutesSaved"], 25)
+
+    def test_office_script_matches_reference(self):
+        if not shutil.which("tsc") or not shutil.which("node"):
+            self.skipTest("tsc/node not installed")
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            subprocess.run(
+                ["tsc", "--strict", "--target", "ES2019", "--lib", "ES2019", "--outDir", str(tmp),
+                 str(self.OFFICE_SCRIPTS / "excelscript.d.ts"), str(self.OFFICE_SCRIPTS / "weekly-scorecard.ts")],
+                check=True, capture_output=True, text=True,
+            )
+            for as_of, window in (("2026-10-30", 7), ("2026-10-30", 30), ("2026-10-25", 3)):
+                with self.subTest(as_of=as_of, window=window):
+                    payload = {"call": "scorecard", "args": [SC_ITEMS, SC_SKILLS, SC_FEEDBACK, as_of, window]}
+                    out = subprocess.run(
+                        ["node", str(Path(__file__).parent / "run_office_script.js"), str(tmp / "weekly-scorecard.js")],
+                        input=json.dumps(payload), check=True, capture_output=True, text=True,
+                    ).stdout
+                    self.assertEqual(json.loads(out), scorecard.scorecard(SC_ITEMS, SC_SKILLS, SC_FEEDBACK, as_of, window))
+        finally:
+            shutil.rmtree(tmp)
 
 
 class SkillsValidatorTests(unittest.TestCase):

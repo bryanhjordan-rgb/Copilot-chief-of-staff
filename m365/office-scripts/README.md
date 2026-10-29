@@ -5,17 +5,18 @@ TypeScript that runs inside `ChiefOfStaff.xlsx` (Excel for the web › **Automat
 | Script | Called by | Returns |
 |--------|-----------|---------|
 | `mine-signatures.ts` | [weekly-skill-review flow](../flows/weekly-skill-review.md) | JSON: skill candidates (signature, count, avg minutes, cadence, common steps, automation fit, score, est. minutes saved, evidence IDs) and signatures already covered by active skills |
+| `weekly-scorecard.ts` | same flow | JSON: the 01-scope success metrics for the week: items completed, on-time %, completion-record %, open items and link coverage %, minutes by goal, brief accepted days, skill runs and success %, est. minutes saved |
 
 ## Install (once, ~3 min)
 
 1. Open the workbook in Excel for the web › **Automate** › **New Script**.
-2. Replace the editor contents with `mine-signatures.ts`. Skip `excelscript.d.ts`; Excel supplies those types.
+2. Replace the editor contents with `mine-signatures.ts` (repeat steps 1–3 for `weekly-scorecard.ts`). Skip `excelscript.d.ts`; Excel supplies those types.
 3. Rename the script `mine-signatures` and save it. It's stored in OneDrive › Documents › Office Scripts.
 4. Test it: **Run**. With no completed items it returns `{"itemsConsidered":0,"candidates":[],...}`.
 
 ## Keeping it honest
 
-`m365/scripts/mine.py` is a line-for-line Python reference. `python3 -m unittest discover -s m365/tests` compiles the TypeScript with `tsc`, runs it under Node, and checks both produce identical JSON on the same rows. If you change one, change the other. Rounding is half-up (JavaScript `Math.round`) in both.
+`m365/scripts/mine.py` and `m365/scripts/scorecard.py` are line-for-line Python references. `python3 -m unittest discover -s m365/tests` compiles the TypeScript with `tsc`, runs it under Node, and checks both produce identical JSON on the same rows. If you change one, change the other. Rounding is half-up (JavaScript `Math.round`) in both.
 
 Run the reference against a downloaded workbook:
 

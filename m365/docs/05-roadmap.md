@@ -61,7 +61,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 - [x] Port `/triage` (Outlook + Teams) as a skill
 - [ ] Port `/enrich` (people context) as a skill
 - [x] Meeting prep / debrief skills (uses Teams meeting recap via Work IQ)
-- [ ] Metrics view: weekly scorecard from Items, Skills, and Feedback (a Summary sheet, or Power BI on the workbook)
+- [x] Metrics view: weekly scorecard from Items, Skills, and Feedback (`weekly-scorecard` Office Script, fed into the weekly review)
 - [ ] Revisit ADR-006: migrate to Dataverse/SharePoint Lists if Excel limits bite
 - [ ] Optional: Planner/To Do mirror for mobile visibility
 
@@ -87,3 +87,4 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 | 14 | 2026-10-29 | Validator checks every column / dropdown value / table named in skills, instructions, flows, cards README, and evals against the schema (71 value refs, 0 drift found). 2 tests (planted typos caught; repo clean). | Deployment kit |
 | 15 | 2026-10-29 | `release.py`: validates, then builds `dist/ChiefOfStaff-kit.zip` (workbook ± goals, rendered or flagged-unrendered instructions, skill zips, cards, Office Script, CHECKLIST.md with commit + skill versions). CI uploads the kit as an artifact. 2 tests. | Daily-use guide |
 | 16 | 2026-10-29 | Daily-use guide (09-daily-use.md): daily/weekly rhythm, phrase cheat sheet per skill, how feedback becomes fixes, rules for editing the sheet by hand, what the agent never does, weekly upkeep. Linked from README, build guide, kit checklist. | Weekly scorecard |
+| 17 | 2026-10-29 | `weekly-scorecard` Office Script + Python twin: the 01-scope success metrics (completed, on-time %, record %, link coverage %, minutes by goal, brief acceptance, skill runs/success %, est. minutes saved). Weekly flow runs it; skill-miner 0.2.3 reports it. Reference + parity tests (3 windows). | Relationship-check skill (not started); first live Phase 1 week |

@@ -8,7 +8,7 @@ description: >-
   skill?", "review my week", or when the same correction appears twice. Do not
   use to execute a playbook.
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
   tier: "native"
   signatures: "review|skills|self"
   tools: "excel"
@@ -28,7 +28,7 @@ The user gets a short weekly review: what got done, where time went, and 0–3 c
 
 ## Steps
 1. **Load.** `list_rows(Items, filter: Open eq 'No')` (keep rows with Status=done and CompletedOn in the window), `list_rows(Skills)`, and `list_rows(Feedback)` (Date in window).
-2. **Week summary.** From items completed in the last 7 days: count, minutes by Goal, % completed on or before DueDate, and brief acceptance (Feedback rows with TargetType=brief: accept vs edit/reject).
+2. **Week summary.** If the prompt includes the `weekly-scorecard` JSON, use its numbers as they are (itemsCompleted, onTimePct, completionRecordPct, linkCoveragePct, minutesByGoal, briefAcceptedDays/briefDays, skillRuns, skillRunSuccessPct, estMinutesSaved) and add one line of interpretation. Otherwise compute from items completed in the last 7 days: count, minutes by Goal, % completed on or before DueDate, and brief acceptance (Feedback rows with TargetType=brief: accept vs edit/reject).
 3. **Use the mining result if provided.** When the prompt includes the `mine-signatures` JSON, take `candidates` (count, avgMinutes, cadence, commonSteps, automationFit, score, estMinutesSaved, evidence) and `coveredBySkills` from it and skip steps 3–5's counting. Still do the health check in step 4 and the judgment in steps 5–6. Otherwise:
    **Group** 30-day completed items by Signature. For each group: count, avg MinutesSpent, cadence (weekday or monthly pattern in CompletedOn), and common step sequence (Steps lines appearing in ≥2/3 of the items, in order).
 4. **Exclude** signatures already in an active Skills row's Signatures. For those skills, check the health of their runs instead: Successes/Runs <50% over ≥4 runs → propose revision or retirement. LastUsed >60d (playbook) / >90d (native) → propose retirement.
