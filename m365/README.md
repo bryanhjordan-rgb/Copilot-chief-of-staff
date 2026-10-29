@@ -21,7 +21,8 @@ m365/
 │   ├── 05-roadmap.md           # phases, exit tests, iteration log
 │   ├── 06-decisions.md         # ADRs + open questions
 │   ├── 07-tenant-readiness.md  # checklist for IT (do this first)
-│   └── 08-build-guide.md       # Phase 1 step-by-step in Copilot Studio
+│   ├── 08-build-guide.md       # Phase 1 step-by-step in Copilot Studio
+│   └── 09-daily-use.md         # what to say, when; feedback; what it never does
 ├── agent/
 │   ├── instructions.md         # agent instructions template (<8k chars, checked)
 │   ├── profile.example.yaml    # your values → render_instructions.py fills the template
@@ -88,5 +89,6 @@ Writes `dist/ChiefOfStaff-kit.zip`: the workbook, rendered instructions, every s
 
 1. [07-tenant-readiness.md](docs/07-tenant-readiness.md) — confirm what your tenant allows
 2. [08-build-guide.md](docs/08-build-guide.md) — Phase 1 build, step by step, with smoke tests
-3. [05-roadmap.md](docs/05-roadmap.md) — phases and exit tests
-4. Copy `agent/profile.example.yaml` to `agent/profile.yaml`, fill it in, and run `python3 m365/scripts/render_instructions.py`
+3. [09-daily-use.md](docs/09-daily-use.md) — once it's live: the daily rhythm and phrase cheat sheet
+4. [05-roadmap.md](docs/05-roadmap.md) — phases and exit tests
+5. Copy `agent/profile.example.yaml` to `agent/profile.yaml`, fill it in, and run `python3 m365/scripts/render_instructions.py`

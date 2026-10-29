@@ -66,7 +66,7 @@ def checklist(rendered, goals, versions):
 
 Commit `{git_commit()}` · instructions {"rendered from your profile" if rendered else "**NOT rendered**: still has {{PLACEHOLDERS}} (run with --profile)"} · workbook {"includes your goals" if goals else "has an empty Goals sheet"}
 
-Full walkthrough: `m365/docs/08-build-guide.md`. Use this list to tick off a deploy.
+Full walkthrough: `m365/docs/08-build-guide.md`. Day-to-day use: `m365/docs/09-daily-use.md`. Use this list to tick off a deploy.
 
 ## Phase 1 (conversational)
 - [ ] Upload `ChiefOfStaff.xlsx` to OneDrive › Apps › ChiefOfStaff

@@ -99,6 +99,9 @@ Run these in order. After each one, open the workbook and check the result.
 
 ## Step 8 — Start the Phase 1 week
 
+Keep [09-daily-use.md](09-daily-use.md) open the first week; it has the phrases each skill responds to.
+
+
 - Every morning: "plan my day". During the day: "add …" for anything new and "what now?" when you switch tasks.
 - When something's done, just mark Status `done` and Open `No` yourself. The `reconcile` skill comes in Phase 2.
 - Each evening, add one line to the iteration log in [05-roadmap.md](05-roadmap.md): brief accepted? how many edits? what was wrong?
