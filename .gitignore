@@ -21,3 +21,6 @@ cache/
 local/
 *.local.md
 *.local.yaml
+
+# Packaged skill zips (build output of m365/scripts/skills.py package)
+dist/

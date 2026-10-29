@@ -1,0 +1,72 @@
+# Agent configuration — what to set in Copilot Studio.
+# Copilot Studio is configured through the UI. This file is the checklist and
+# the record of intent; keep it in sync with what's deployed.
+
+agent:
+  name: "Chief of Staff"
+  description: "Prioritizes your day, investigates new items, reconciles completed work, and proposes skills from repeated work."
+  orchestration: github-copilot-harness   # R4; fallback: generative orchestration (classic)
+  primary_model: claude-sonnet-5          # Q4: A/B against gpt-5.5-chat for one week each
+  instructions_file: agent/instructions.md
+  instruction_char_limit: 8000            # enforced by scripts/skills.py check-instructions
+  memory: enabled                         # preview; preferences across conversations
+  channels: [microsoft-365-copilot, teams]
+  entra_agent_id: auto                    # created automatically since July 2026
+
+skills:                                   # native skills; import zips from dist/skills/
+  - prioritize
+  - intake
+  - daily-brief
+  - reconcile        # phase 2
+  - skill-miner      # phase 3
+
+knowledge:
+  - type: work-iq                         # R6 (preview); fallback: connectors below
+    scopes: [mail, calendar, files, teams, people]
+  - type: sharepoint
+    note: "Optional site/folder holding personal context docs (constraints, team notes)"
+
+tools:
+  dataverse:                              # system of record (ADR-002)
+    tables: [cos_goal, cos_item, cos_link, cos_activity, cos_record, cos_brief, cos_feedback, cos_skill, cos_skill_run]
+    operations: [list, get, create, update]
+    confirmation: none                    # internal state; no outbound effect
+  custom_tools:                           # implement as agent workflows (deterministic) over Dataverse
+    - name: find_playbook
+      input: {signature: string}
+      output: "cos_skill row (tier=playbook|native, status=active) whose signatures include input, else null"
+    - name: propose_skill
+      input: {name: string, description: string, signatures: string, body: string, evidence: "string[]", est_minutes_saved: int}
+      output: "new cos_skill row, status=proposed"
+    - name: log_skill_run
+      input: {skill: string, item: string, outcome: "success|partial|fail", user_edits: int, minutes_saved_est: int}
+      effect: "inserts cos_skill_run; recomputes cos_skill.runs, success_rate, last_used"
+    - name: log_feedback
+      input: {target_type: string, target_ref: string, signal: string, detail: string, theme: string}
+    - name: get_free_blocks
+      input: {date: date}
+      output: "free calendar blocks ≥25 min between earliest-meeting and home-by constraints"
+  outlook:
+    connector: office365-outlook          # or Outlook MCP (Agent 365) if allowed (R7)
+    operations: [search, get_message, create_draft, send]
+    confirmation: required                # ADR-005 — every send asks the user
+  teams:
+    operations: [search_messages, get_chat, post_adaptive_card, post_message]
+    confirmation: required_for: [post_message]   # brief card from workflow is the only auto-post (to the user's own chat)
+  planner:
+    connector: planner-mcp                # optional mirror (Q5); basic plans only
+    enabled: false
+
+triggers:                                 # see m365/flows/
+  - name: daily-brief
+    type: recurrence
+    schedule: "Mon–Fri 07:00 {{TIMEZONE}}"
+    flow: flows/daily-brief.md
+  - name: completion-detector
+    type: recurrence
+    schedule: "Mon–Fri every 2h 09:00–17:00"
+    flow: flows/completion-detector.md
+  - name: weekly-skill-review
+    type: recurrence
+    schedule: "Fri 15:00"
+    flow: flows/weekly-skill-review.md
