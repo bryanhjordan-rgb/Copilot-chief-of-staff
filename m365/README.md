@@ -27,7 +27,7 @@ m365/
 │   └── agent-config.yaml       # tools, knowledge, triggers, model
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
-│   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/
+│   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/  triage/
 ├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive

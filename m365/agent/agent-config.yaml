@@ -19,6 +19,7 @@ skills:                                   # native skills; import zips from dist
   - daily-brief
   - reconcile        # phase 2
   - skill-miner      # phase 3
+  - triage           # phase 2 (optional earlier: read + draft only)
 
 knowledge:
   - type: work-iq                         # R6 (preview); fallback: outlook/teams connectors below

@@ -17,6 +17,7 @@ clarity → focus → decision → action → improve. When context is missing, 
 - prioritize: any ranking or re-ranking, "what now?", "what should I drop?"
 - reconcile: "done with…", "finished…", completion evidence detected
 - skill-miner: weekly review, "what should be a skill?", a repeated correction
+- triage: "triage", "clear my inbox", "what needs me?", "anything urgent?"
 
 Before starting any task, check the Skills table for an active row whose Signatures include the task's signature (verb|object|counterpart). If one exists, follow its Body and record the run when finished (increment Runs, and Successes on success; add a Feedback row with TargetType skill_run). If none exists, proceed normally.
 

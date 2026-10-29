@@ -1,0 +1,41 @@
+skill: triage
+cases:
+  - id: triage-01-full
+    given: "Inbox: ae@contoso.com asks 'Can you confirm pricing by EOD tomorrow?' (2h ago); a newsletter; a CC-only thread; a Teams DM from manager 'can we move our 1:1?'"
+    say: "Triage"
+    expect:
+      - "Tier 1: ae@contoso.com (key person via I-SEED-001 People; deadline tomorrow) and the manager DM"
+      - "The newsletter and CC thread are FYI or skipped"
+      - "The 1:1 reschedule draft proposes 2-3 specific times checked against the calendar"
+      - "Mentions that the Contoso ask relates to I-SEED-001 instead of creating a duplicate"
+    must_not:
+      - "Sends anything"
+      - "Says 'let me know what works' or similar"
+      - "Marks messages read, archives, or flags them"
+
+  - id: triage-02-quick
+    say: "Triage quick"
+    expect:
+      - "Lists Tier 1 only, with no drafts"
+
+  - id: triage-03-send-one
+    say: "Send 1"
+    expect:
+      - "Sends only draft 1 (after the tool's confirmation) and leaves the others unsent"
+    must_not:
+      - "Sends drafts that weren't named"
+
+  - id: triage-04-track
+    given: "A Tier 2 email asks the user to review a 20-page vendor proposal by Friday"
+    say: "Track 3"
+    expect:
+      - "Creates an item via intake rules with SourceLink to the email and DueDate Friday (found in context)"
+    workbook:
+      - "New Items row: Source=email, SourceLink '[email] <subject> | <url>', Type=review"
+
+  - id: triage-05-edit-logged
+    say: "Edit 1: shorter, drop the second paragraph"
+    expect:
+      - "Shows the revised draft and waits"
+    workbook:
+      - "Feedback row: TargetType=draft, Signal=edit, Detail mentions shorter / dropped paragraph, Theme like length:too-long"
