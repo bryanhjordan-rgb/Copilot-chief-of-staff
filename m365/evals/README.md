@@ -14,8 +14,10 @@ Scenario tests for each skill. Run them before importing a changed skill, and wh
 
 ## Running a pass (about 30 min)
 
-1. Make a test copy of the workbook (`ChiefOfStaff-test.xlsx`). Point the agent's Excel tools at it, or use a second test agent.
-2. Load `fixtures.yaml`: Goals rows and Items rows, with `TODAY` replaced by real dates. Put the calendar entries on a test calendar day, or run the brief cases on a day that resembles them.
+1. Build a test workbook already loaded with the fixtures:
+   `python3 m365/scripts/build_workbook.py ~/ChiefOfStaff-test.xlsx --fixtures m365/evals/fixtures.yaml --today <run date>`
+   Upload it next to the real one, and point the agent's Excel tools at it (or use a second test agent).
+2. Put the `calendar_today` entries on your calendar for the run day (a test calendar works), or run the brief cases on a day that resembles them.
 3. Run each case in the Copilot Studio test pane, in file order. Cases inside a file build on each other.
 4. Score each case:
    - **Pass:** every `expect` and `workbook` line holds, and no `must_not` line happens

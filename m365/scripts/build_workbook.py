@@ -3,6 +3,7 @@
 
 Usage:
   python3 m365/scripts/build_workbook.py [output.xlsx] [--goals goals.yaml]
+  python3 m365/scripts/build_workbook.py test.xlsx --fixtures m365/evals/fixtures.yaml [--today YYYY-MM-DD]
 
 Default output: m365/workbook/ChiefOfStaff.xlsx. Upload it to OneDrive and point
 the agent's Excel Online (Business) tools at it.
@@ -11,11 +12,15 @@ the agent's Excel Online (Business) tools at it.
 objectives become G1, G2, ... (in priority order) and personal goals PG1, PG2, ...
 Build to a path outside the repo (e.g. ~/ChiefOfStaff.xlsx) so your goals aren't
 committed by accident.
+
+--fixtures loads the eval seed data (Goals + Items) instead of the example row,
+resolving TODAY, TODAY+n and TODAY-n against --today (default: the real date).
 """
 
 import argparse
+import re
 import sys
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 try:
@@ -134,11 +139,38 @@ def goal_rows(goals_path):
     return rows
 
 
-def build(out_path, goals_path=None):
+RELATIVE_DAY = re.compile(r"^TODAY([+-]\d+)?$")
+
+
+def fixture_rows(fixtures_path, schema, today):
+    """Eval fixtures with TODAY±n resolved; datetime columns get a 09:00 time."""
+    data = yaml.safe_load(Path(fixtures_path).read_text(encoding="utf-8")) or {}
+    seed = {}
+    for table, key in (("Goals", "goals"), ("Items", "items")):
+        types = {c["name"]: c.get("type") for c in schema["tables"][table]["columns"]}
+        rows = []
+        for row in data.get(key) or []:
+            resolved = {}
+            for col, value in row.items():
+                if col not in types:
+                    sys.exit(f"fixtures: {table} has no column '{col}'")
+                match = RELATIVE_DAY.match(str(value))
+                if match:
+                    day = today + timedelta(days=int(match.group(1) or 0))
+                    value = day.isoformat() + ("T09:00" if types[col] == "datetime" else "")
+                resolved[col] = value
+            rows.append(resolved)
+        seed[table] = rows
+    return seed
+
+
+def build(out_path, goals_path=None, fixtures_path=None, today=None):
     schema = yaml.safe_load(SCHEMA.read_text(encoding="utf-8"))
     seed = {"Items": [EXAMPLE_ITEM]}
     if goals_path:
         seed["Goals"] = goal_rows(goals_path)
+    if fixtures_path:
+        seed = fixture_rows(fixtures_path, schema, today or date.today())
     wb = Workbook()
     wb.remove(wb.active)
     wb.properties.creator = "Chief of Staff agent"
@@ -227,5 +259,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build ChiefOfStaff.xlsx from the schema.")
     parser.add_argument("output", nargs="?", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--goals", type=Path, help="goals.yaml to load into the Goals table")
+    parser.add_argument("--fixtures", type=Path, help="eval fixtures.yaml to load (replaces --goals and the example row)")
+    parser.add_argument("--today", type=date.fromisoformat, help="date that TODAY resolves to (default: today)")
     args = parser.parse_args()
-    build(args.output, args.goals)
+    build(args.output, args.goals, args.fixtures, args.today)

@@ -60,6 +60,7 @@ python3 m365/scripts/skills.py export-evals  # → dist/evals.csv
 pip install pyyaml openpyxl
 python3 m365/scripts/build_workbook.py    # → m365/workbook/ChiefOfStaff.xlsx (empty template)
 python3 m365/scripts/build_workbook.py ~/ChiefOfStaff.xlsx --goals goals.yaml   # with your goals filled in
+python3 m365/scripts/build_workbook.py ~/ChiefOfStaff-test.xlsx --fixtures m365/evals/fixtures.yaml  # eval test data
 ```
 
 Upload `ChiefOfStaff.xlsx` to OneDrive (`/Apps/ChiefOfStaff/`). The **List** sheet is the daily list. Goals, Skills, and Feedback support prioritization and the learning loop. Change columns in `schema/workbook.yaml` and rebuild; don't edit the headers by hand. Layout and connector rules: [03-data-model.md](docs/03-data-model.md).

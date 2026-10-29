@@ -99,6 +99,39 @@ class GoalsImportTests(WorkbookTestCase):
         self.assertEqual(self.lint_errors(), [])
 
 
+class FixturesTests(WorkbookTestCase):
+    FIXTURES = Path(__file__).resolve().parent.parent / "evals" / "fixtures.yaml"
+
+    def build_fixtures(self):
+        from datetime import date
+        build_workbook.build(self.path, fixtures_path=self.FIXTURES, today=date(2026, 11, 2))
+
+    def test_relative_dates_resolve(self):
+        self.build_fixtures()
+        rows = {r["ID"]: r for r in mine.read_rows(self.path, "Items")}
+        self.assertNotIn("I-EXAMPLE", rows)
+        self.assertEqual(rows["I-SEED-005"]["DueDate"], "2026-11-02")      # TODAY
+        self.assertEqual(rows["I-SEED-001"]["DueDate"], "2026-11-03")      # TODAY+1
+        self.assertEqual(rows["I-SEED-006"]["CompletedOn"], "2026-10-26T09:00")  # datetime column
+        goals = {r["ID"]: r for r in mine.read_rows(self.path, "Goals")}
+        self.assertEqual(goals["G2"]["LastUpdate"], "2026-10-24")         # TODAY-9
+
+    def test_fixture_workbook_lints_clean_and_mines_like_the_eval_expects(self):
+        self.build_fixtures()
+        self.assertEqual(self.lint_errors(), [])
+        result = mine.mine(mine.read_rows(self.path, "Items"), mine.read_rows(self.path, "Skills"), "2026-11-02")
+        [candidate] = result["candidates"]  # skill-miner-01-propose
+        self.assertEqual(candidate["signature"], "send|weekly-status|leadership")
+        self.assertEqual((candidate["count"], candidate["avgMinutes"]), (3, 35))
+        self.assertEqual(candidate["evidence"], ["I-SEED-006", "I-SEED-007", "I-SEED-008"])
+
+    def test_unknown_fixture_column_fails(self):
+        bad = self.tmp / "bad.yaml"
+        bad.write_text("items:\n  - {ID: I-X, Titel: typo}\n", encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            build_workbook.build(self.path, fixtures_path=bad)
+
+
 class LintWorkbookTests(WorkbookTestCase):
     def test_fresh_workbook_is_clean(self):
         self.assertEqual(self.lint_errors(), [])

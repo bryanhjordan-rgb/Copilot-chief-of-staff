@@ -16,11 +16,11 @@ items:
   - {ID: I-SEED-003, Open: "Yes", Status: waiting, Title: "Get legal sign-off on vendor MSA", WaitingOn: "legal@company.com", DueDate: "TODAY+3", Type: follow_up, Created: "TODAY-6"}
   - {ID: I-SEED-004, Open: "Yes", Status: triaged, Title: "Reorganize team SharePoint folders", EffortMin: 45, Energy: shallow, Type: task, Created: "TODAY-20"}
   - {ID: I-SEED-005, Open: "Yes", Status: triaged, Title: "Review analyst candidate shortlist", Goal: G3, DueDate: "TODAY", EffortMin: 30, Energy: shallow, Type: review, Created: "TODAY-1"}
-  - {ID: I-SEED-006, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", MinutesSpent: 35, CompletedOn: "TODAY-7",
+  - {ID: I-SEED-006, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 35, CompletedOn: "TODAY-7",
      Steps: "collect updates | teams | 15\ndraft status | outlook | 15\nsend | outlook | 5"}
-  - {ID: I-SEED-007, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", MinutesSpent: 40, CompletedOn: "TODAY-14",
+  - {ID: I-SEED-007, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 40, CompletedOn: "TODAY-14",
      Steps: "collect updates | teams | 20\ndraft status | outlook | 15\nsend | outlook | 5"}
-  - {ID: I-SEED-008, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", MinutesSpent: 30, CompletedOn: "TODAY-21",
+  - {ID: I-SEED-008, Open: "No", Status: done, Title: "Send weekly status to leadership", Signature: "send|weekly-status|leadership", Outcome: "Weekly status sent to leadership.", MinutesSpent: 30, CompletedOn: "TODAY-21",
      Steps: "collect updates | teams | 12\ndraft status | outlook | 13\nsend | outlook | 5"}
 
 calendar_today:
