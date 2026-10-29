@@ -1,0 +1,34 @@
+skill: reconcile
+cases:
+  - id: reconcile-01-user-done
+    say: "Done with the Contoso pricing prep"
+    expect:
+      - "Identifies I-SEED-001 without asking (single clear match)"
+      - "CLOSED block: minutes, signature, outcome, artifacts, goal delta proposed for G1, follow-ups offered"
+    workbook:
+      - "I-SEED-001: Status=done, Open=No, CompletedOn set, Outcome, Steps (step | tool | minutes lines), Signature verb|object|counterpart"
+      - "History keeps the earlier lines and adds 'reconciled'"
+    must_not:
+      - "Updates Goals.Progress before the user confirms"
+
+  - id: reconcile-02-ambiguous
+    say: "Finished the review"
+    expect:
+      - "Shows the 2-3 closest open items (e.g., I-SEED-005, I-SEED-001) and asks which"
+    workbook:
+      - "No row changes before the user answers"
+
+  - id: reconcile-03-detector
+    say: "(flow) Run reconcile in detector mode for these items: [{ID: I-SEED-001, evidence: 'Contoso renewal review meeting ended 12:00'}]"
+    expect:
+      - "Asks 'Looks like ... is done (meeting ended). Mark complete?' and stops"
+    must_not:
+      - "Closes the item before confirmation"
+
+  - id: reconcile-04-signature-reuse
+    given: "User closes a new item 'Send weekly status to leadership'"
+    say: "Done with the weekly status"
+    expect:
+      - "Reuses the existing signature send|weekly-status|leadership"
+    must_not:
+      - "Mints a near-duplicate signature like send|status-update|leadership"

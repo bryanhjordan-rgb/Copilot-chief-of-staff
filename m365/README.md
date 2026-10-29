@@ -28,6 +28,7 @@ m365/
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
 │   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/
+├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
@@ -40,8 +41,9 @@ m365/
 
 ```bash
 pip install pyyaml
-python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instruction length
+python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instruction length, evals present
 python3 m365/scripts/skills.py package    # → dist/skills/<name>.zip for Copilot Studio → Skills → Upload
+python3 m365/scripts/skills.py export-evals  # → dist/evals.csv
 ```
 
 ## The workbook (v1 store)

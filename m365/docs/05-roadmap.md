@@ -70,3 +70,5 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 |---|------|--------------|------|
 | 1 | 2026-10-29 | Scope, architecture, data model, skill lifecycle, ADRs, tenant checklist. Instructions draft. Skills v0.1: prioritize, intake, daily-brief, reconcile, skill-miner. Skill validator/packager. | Phase 0: run the readiness checklist with IT; fill CLAUDE.md placeholders + goals |
 | 2 | 2026-10-29 | Store switched from Dataverse to a single Excel workbook (ADR-006): schema/workbook.yaml, generated ChiefOfStaff.xlsx, skills v0.2 and flows rewritten for the Excel connector. Custom tools dropped; Phase 1 needs only Excel + Work IQ/Outlook. | Upload workbook, wire Excel tools, run Phase 1 |
+| 3 | 2026-10-29 | Phase 1 build guide (08-build-guide.md) with an 8-step smoke test. | Evals |
+| 4 | 2026-10-29 | Skill evals: fixtures + 20 cases across 5 skills, pass/partial/fail scoring, import bar; validator requires ≥3 cases per skill; export to CSV. | Workbook linter + tests |

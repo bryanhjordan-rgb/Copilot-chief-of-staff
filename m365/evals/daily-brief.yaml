@@ -1,0 +1,36 @@
+skill: daily-brief
+cases:
+  - id: daily-brief-01-plan
+    say: "Plan my day"
+    expect:
+      - "Header with weekday derived from the date, meeting count, free hours"
+      - "TOP 3 includes I-SEED-005 and I-SEED-001, each with a time slot and links"
+      - "PLAN puts Contoso prep before the 11:00 Contoso meeting"
+      - "HEADS UP flags the 17:30 vendor call as a home-by conflict"
+      - "NOT TODAY lists I-SEED-004 with drop/delegate/defer"
+      - "Fits on one screen; ends with 'Accept, or tell me what to change.'"
+    workbook:
+      - "Planned rows have DoDate=today, PlannedSlot HH:MM-HH:MM, Status=scheduled, a 'scheduled' History line"
+    must_not:
+      - "Schedules anything after the home-by time or before the earliest-meeting time"
+      - "Moves or declines the vendor call"
+      - "Puts I-SEED-003 (waiting) in the plan"
+
+  - id: daily-brief-02-goals-pulse
+    say: "Morning brief"
+    expect:
+      - "GOALS names G2 as stale (LastUpdate 9 days ago), or as having nothing planned today"
+
+  - id: daily-brief-03-accept
+    say: "Accept"
+    expect:
+      - "One-line acknowledgement"
+    workbook:
+      - "New Feedback row: TargetType=brief, TargetRef=today's date, Signal=accept"
+
+  - id: daily-brief-04-edit
+    say: "Swap the budget work for the candidate review and push budget to tomorrow"
+    expect:
+      - "Re-plans with the swap and shows only the changed rows"
+    workbook:
+      - "I-SEED-002 DoDate=tomorrow; Feedback row Signal=edit with the user's words in Detail"

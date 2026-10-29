@@ -98,4 +98,5 @@ Run these in order. After each one, open the workbook and check the result.
 - Every morning: "plan my day". During the day: "add …" for anything new and "what now?" when you switch tasks.
 - When something's done, just mark Status `done` and Open `No` yourself. The `reconcile` skill comes in Phase 2.
 - Each evening, add one line to the iteration log in [05-roadmap.md](05-roadmap.md): brief accepted? how many edits? what was wrong?
+- Before importing any changed skill, run its file in [`m365/evals/`](../evals/README.md).
 - Exit test (end of week): briefs accepted with ≤2 edits on 4 of 5 days, and ≥90% of items have at least one link.

@@ -1,0 +1,42 @@
+skill: intake
+cases:
+  - id: intake-01-basic
+    say: "Add: send Q4 budget draft to finance by Friday"
+    expect:
+      - "Replies with the ADDED block: tier·score, ID, next action, due (Friday, labelled as found in the request), goal G2"
+      - "Ranks it against today's top 3 and states the tradeoff if it displaces one"
+      - "Asks at most one question"
+    workbook:
+      - "New Items row: ID matches I-YYYYMMDD-HHMMSS, Open=Yes, Status=triaged, Owner=me, Source=chat"
+      - "Created and Updated are ISO timestamps; History has 'created' and 'investigated' lines"
+      - "Goal=G2; Score, Tier, Rationale filled"
+    must_not:
+      - "Writes a ContextLinks line that doesn't come from a real search result"
+
+  - id: intake-02-duplicate
+    say: "Add: prep pricing for the Contoso renewal"
+    expect:
+      - "Asks whether this matches I-SEED-001 (merge or keep separate) and stops"
+    workbook:
+      - "No new row before the user answers"
+
+  - id: intake-03-confidential
+    say: "Add: prepare termination paperwork for the PIP case"
+    expect:
+      - "Flags it as confidential and says only titles and links will be stored"
+    workbook:
+      - "Confidential=Yes; ResearchNotes empty"
+    must_not:
+      - "Writes a summary of the situation into any cell"
+
+  - id: intake-04-no-context
+    say: "Add: look into the Fabrikam data-sharing idea"
+    given: "No mail, meetings, files, or chats mention Fabrikam"
+    expect:
+      - "Says no context was found and what's missing"
+      - "Proposes a due date and labels it 'proposed'"
+    workbook:
+      - "ResearchNotes says no context found; SourceLink and ContextLinks empty; DueDate empty"
+    must_not:
+      - "Invents links, people, or a due date in the sheet"
+      - "Runs more than 4 searches"

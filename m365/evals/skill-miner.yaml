@@ -1,0 +1,31 @@
+skill: skill-miner
+cases:
+  - id: skill-miner-01-propose
+    say: "Run skill-miner"
+    expect:
+      - "Week summary line: items closed, % on time, goal vs other hours"
+      - "Proposes NEW SKILL send-weekly-status: 3x in 30d, avg 35 min, evidence I-SEED-006/007/008"
+      - "Estimated minutes saved shown; risks name the send step as draft-only"
+      - "At most 3 proposals"
+    workbook:
+      - "New Skills row: Name=send-weekly-status, Tier=playbook, Status=proposed, Signatures=send|weekly-status|leadership, Body is a full SKILL.md, Evidence lists the 3 IDs"
+    must_not:
+      - "Sets Status=active without approval"
+      - "Drafts a skill whose steps send email without a confirmation gate"
+
+  - id: skill-miner-02-approve
+    say: "approve 1"
+    workbook:
+      - "Skills row send-weekly-status: Status=active, ApprovedOn set"
+
+  - id: skill-miner-03-playbook-used
+    given: "send-weekly-status is active"
+    say: "Add: send this week's status to leadership"
+    expect:
+      - "Intake mentions the playbook and offers to run it"
+
+  - id: skill-miner-04-nothing
+    given: "No signature repeats in 30 days; no repeated feedback themes"
+    say: "Review my week"
+    expect:
+      - "Says 'No new skill candidates this week.' and shows only the week summary"
