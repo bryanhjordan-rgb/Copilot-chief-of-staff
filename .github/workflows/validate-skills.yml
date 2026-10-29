@@ -22,6 +22,22 @@ jobs:
       - run: python3 m365/scripts/skills.py validate
       - run: python3 m365/scripts/build_workbook.py "$RUNNER_TEMP/ChiefOfStaff.xlsx"
       - run: python3 m365/scripts/lint_workbook.py m365/workbook/ChiefOfStaff.xlsx
+      - name: Committed workbook and prebuilt skill zips match the source
+        run: |
+          python3 m365/scripts/skills.py prebuild
+          git status --porcelain m365/kit
+          test -z "$(git status --porcelain m365/kit)" || { echo 'Stale: run skills.py prebuild, then commit'; exit 1; }
+          # xlsx bytes vary with zlib and with whether lxml is installed, so compare canonical XML
+          python3 - "$RUNNER_TEMP/ChiefOfStaff.xlsx" m365/workbook/ChiefOfStaff.xlsx <<'PY'
+          import sys, zipfile
+          from xml.etree.ElementTree import canonicalize
+          def parts(path):
+              with zipfile.ZipFile(path) as z:
+                  return {n: canonicalize(z.read(n).decode("utf-8")) if n.endswith((".xml", ".rels")) else z.read(n) for n in z.namelist()}
+          a, b = (parts(f) for f in sys.argv[1:])
+          stale = sorted(n for n in a.keys() | b.keys() if a.get(n) != b.get(n))
+          sys.exit(f"Stale workbook ({', '.join(stale)}): run build_workbook.py, then commit" if stale else 0)
+          PY
       - run: python3 -m unittest discover -s m365/tests -v
       - run: python3 m365/scripts/release.py
       - uses: actions/upload-artifact@v4

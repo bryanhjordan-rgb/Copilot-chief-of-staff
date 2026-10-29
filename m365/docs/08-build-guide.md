@@ -4,6 +4,8 @@
 
 **Shortcut:** `python3 m365/scripts/release.py --goals goals.yaml` builds everything this guide uploads (workbook, instructions, skill zips) into `dist/ChiefOfStaff-kit.zip`, with a tick-list `CHECKLIST.md`.
 
+**No scripts allowed on your machine?** Use [00-install-no-code.md](00-install-no-code.md) instead. It covers the same build with prebuilt files.
+
 **Before you start:** readiness rows R2 (maker access) and R3 (Excel connector allowed) in [07-tenant-readiness.md](07-tenant-readiness.md) must be "yes". Copilot Studio menus move often, so if a label below doesn't match, look for the nearest equivalent and note it in the iteration log.
 
 ---
@@ -12,7 +14,7 @@
 
 1. Get the file: `m365/workbook/ChiefOfStaff.xlsx` from the repo, or rebuild it with `python3 m365/scripts/build_workbook.py`.
 2. In OneDrive for Business, create the folder **Apps › ChiefOfStaff** and upload the file there.
-3. Open it in **Excel for the web**. Check that it has 5 sheets (List, Goals, Skills, Feedback, Guide), and that **Table Design** shows the table names `Items`, `Goals`, `Skills`, `Feedback`.
+3. Open it in **Excel for the web**. Check that it has 6 sheets (List, Goals, Skills, Feedback, People, Guide), and that **Table Design** shows the table names `Items`, `Goals`, `Skills`, `Feedback`, `People`.
 4. Fill the **Goals** sheet. Either:
    - build the workbook with your goals already in it: `python3 m365/scripts/build_workbook.py ~/ChiefOfStaff.xlsx --goals goals.yaml` (work objectives → `G1…` in priority order, personal goals → `PG1…`), and upload that file instead; or
    - type them over the blank row: `G1`, `G2`, … with Priority 1 = highest.
@@ -38,15 +40,15 @@ Set these inputs the same way on all four:
 | Location | `OneDrive for Business` (or `me`) | Set as a fixed value, not filled by AI |
 | Document Library | `OneDrive` | Fixed value |
 | File | `/Apps/ChiefOfStaff/ChiefOfStaff.xlsx` | Fixed value (use the file picker) |
-| Table | — | **Filled by AI**, so one tool serves all four tables |
+| Table | — | **Filled by AI**, so one tool serves all five tables |
 
 Then set these per action:
 
 | Tool name (rename it) | Action | Extra settings | Description for the agent (paste) |
 |-----------------------|--------|----------------|-----------------------------------|
-| `list_rows` | List rows present in a table | DateTime Format = ISO 8601. Filter Query, Order By, Select Query, Top Count = filled by AI | "Read rows from the Items, Goals, Skills, or Feedback table. Use Filter Query `Open eq 'Yes'` for open items. Only one filter function per column." |
-| `get_row` | Get a row | Key Column + Key Value = filled by AI. DateTime Format = ISO 8601 | "Read one row by key. Keys: Items→ID, Goals→ID, Skills→Name, Feedback→ID." |
-| `add_row` | Add a row into a table | Row = filled by AI | "Add one row. Always supply the key (ID or Name). Dates are ISO text." |
+| `list_rows` | List rows present in a table | DateTime Format = ISO 8601. Filter Query, Order By, Select Query, Top Count = filled by AI | "Read rows from the Items, Goals, Skills, Feedback, or People table. Use Filter Query `Open eq 'Yes'` for open items. Only one filter function per column." |
+| `get_row` | Get a row | Key Column + Key Value = filled by AI. DateTime Format = ISO 8601 | "Read one row by key. Keys: Items→ID, Goals→ID, Skills→Name, Feedback→ID, People→Email." |
+| `add_row` | Add a row into a table | Row = filled by AI | "Add one row. Always supply the key (ID, Name, or Email). Dates are ISO text." |
 | `update_row` | Update a row | Key Column, Key Value, item properties = filled by AI | "Update cells in one row by key. Blank fields stay unchanged. To append to History, get_row first." |
 
 If the Table input can't be AI-filled in your tenant, create one set of tools per table instead (`list_items`, `add_item`, …). Start with Items + Goals; Skills and Feedback aren't needed until Phase 3.
@@ -65,6 +67,7 @@ Pick **one** path:
 ## Step 5 — Import skills (10 min)
 
 1. `pip install pyyaml && python3 m365/scripts/skills.py package` → produces `dist/skills/*.zip`.
+   No Python? The same zips are prebuilt in `m365/kit/skills/`.
 2. Agent **› Skills › Upload**: import `prioritize.zip`, `intake.zip`, and `daily-brief.zip`.
 3. Check that each one shows its name and description. `reconcile` and `skill-miner` wait until Phase 2/3.
 4. **No Skills tab (R5 = no)?** Paste the body of each SKILL.md into the instructions under a heading only if there's room. Otherwise create one **Topic** per skill whose trigger is its description and whose body is the skill text.
