@@ -11,7 +11,9 @@
 1. Get the file: `m365/workbook/ChiefOfStaff.xlsx` from the repo, or rebuild it with `python3 m365/scripts/build_workbook.py`.
 2. In OneDrive for Business, create the folder **Apps › ChiefOfStaff** and upload the file there.
 3. Open it in **Excel for the web**. Check that it has 5 sheets (List, Goals, Skills, Feedback, Guide), and that **Table Design** shows the table names `Items`, `Goals`, `Skills`, `Feedback`.
-4. On the **Goals** sheet, replace the blank row with your real goals: `G1`, `G2`, … with Priority 1 = highest. Use the same goals as `goals.yaml`.
+4. Fill the **Goals** sheet. Either:
+   - build the workbook with your goals already in it: `python3 m365/scripts/build_workbook.py ~/ChiefOfStaff.xlsx --goals goals.yaml` (work objectives → `G1…` in priority order, personal goals → `PG1…`), and upload that file instead; or
+   - type them over the blank row: `G1`, `G2`, … with Priority 1 = highest.
 5. Close the tab. The connector can't write while an edit session is mid-save.
 
 ## Step 2 — Create the agent (10 min)

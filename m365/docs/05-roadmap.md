@@ -73,3 +73,4 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 | 3 | 2026-10-29 | Phase 1 build guide (08-build-guide.md) with an 8-step smoke test. | Evals |
 | 4 | 2026-10-29 | Skill evals: fixtures + 20 cases across 5 skills, pass/partial/fail scoring, import bar; validator requires ≥3 cases per skill; export to CSV. | Workbook linter + tests |
 | 5 | 2026-10-29 | Workbook linter (schema, Open/Status sync, link/date/signature formats, confidential rules, references, link-coverage metric) + 15 unittest cases for build/lint/validate; all wired into CI. Fixed: example row referenced a non-existent goal. | Seed Goals from goals.yaml |
+| 6 | 2026-10-29 | `build_workbook.py --goals goals.yaml`: objectives → G1… by priority, personal goals → PG1…; warns on template examples. Prioritize rubric distinguishes G*/PG* (0.2.1). 2 new tests. | Adaptive cards |

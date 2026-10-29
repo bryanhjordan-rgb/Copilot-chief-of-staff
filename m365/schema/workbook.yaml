@@ -71,7 +71,7 @@ tables:
     key: ID
     description: Active objectives (from goals.yaml). Drives goal-fit scoring.
     columns:
-      - {name: ID, width: 8, note: "G1, G2, ..."}
+      - {name: ID, width: 8, note: "G1, G2, ... for work objectives; PG1, PG2, ... for personal goals"}
       - {name: Goal, width: 40}
       - {name: Priority, width: 9, type: int, note: "1 = highest"}
       - {name: Target, width: 40}

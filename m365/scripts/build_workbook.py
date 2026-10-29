@@ -2,12 +2,18 @@
 """Build ChiefOfStaff.xlsx from m365/schema/workbook.yaml.
 
 Usage:
-  python3 m365/scripts/build_workbook.py [output.xlsx]
+  python3 m365/scripts/build_workbook.py [output.xlsx] [--goals goals.yaml]
 
 Default output: m365/workbook/ChiefOfStaff.xlsx. Upload it to OneDrive and point
 the agent's Excel Online (Business) tools at it.
+
+--goals fills the Goals table from a goals.yaml in the root kit's format:
+objectives become G1, G2, ... (in priority order) and personal goals PG1, PG2, ...
+Build to a path outside the repo (e.g. ~/ChiefOfStaff.xlsx) so your goals aren't
+committed by accident.
 """
 
+import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -94,8 +100,45 @@ EXAMPLE_ITEM = {
 }
 
 
-def build(out_path):
+def goal_rows(goals_path):
+    """Map a root-kit goals.yaml onto Goals table rows."""
+    data = yaml.safe_load(Path(goals_path).read_text(encoding="utf-8")) or {}
+    quarter = str(data.get("quarter", ""))
+    updated = str(data.get("last_updated", ""))
+    objectives = sorted(data.get("objectives") or [], key=lambda o: o.get("priority", 99))
+    rows = []
+    for i, obj in enumerate(objectives, start=1):
+        rows.append({
+            "ID": f"G{i}",
+            "Goal": obj.get("name", ""),
+            "Priority": obj.get("priority", i),
+            "Target": obj.get("target", ""),
+            "KeyResults": "\n".join(obj.get("key_results") or []),
+            "Progress": obj.get("progress", 0.0),
+            "Status": obj.get("status", "on_track"),
+            "Quarter": quarter,
+            "LastUpdate": updated,
+        })
+    for i, goal in enumerate(data.get("personal") or [], start=1):
+        rows.append({
+            "ID": f"PG{i}",
+            "Goal": goal.get("name", ""),
+            "Progress": goal.get("progress", 0.0),
+            "Status": goal.get("status", "on_track"),
+            "Quarter": quarter,
+            "LastUpdate": updated,
+        })
+    examples = [r["Goal"] for r in rows if str(r["Goal"]).lower().startswith("example")]
+    if examples:
+        print(f"warning: {len(examples)} goal(s) still look like template examples: {examples}")
+    return rows
+
+
+def build(out_path, goals_path=None):
     schema = yaml.safe_load(SCHEMA.read_text(encoding="utf-8"))
+    seed = {"Items": [EXAMPLE_ITEM]}
+    if goals_path:
+        seed["Goals"] = goal_rows(goals_path)
     wb = Workbook()
     wb.remove(wb.active)
     wb.properties.creator = "Chief of Staff agent"
@@ -103,7 +146,7 @@ def build(out_path):
     wb.properties.modified = FIXED_TIMESTAMP
 
     for table_name, spec in schema["tables"].items():
-        add_table(wb, table_name, spec)
+        add_table(wb, table_name, spec, seed.get(table_name, []))
     add_guide(wb, schema)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -111,7 +154,7 @@ def build(out_path):
     print(f"wrote {out_path}")
 
 
-def add_table(wb, table_name, spec):
+def add_table(wb, table_name, spec, rows):
     ws = wb.create_sheet(spec["sheet"])
     columns = spec["columns"]
     names = [c["name"] for c in columns]
@@ -120,7 +163,7 @@ def add_table(wb, table_name, spec):
     if any(not n.isalnum() for n in names):
         sys.exit(f"{table_name}: column names must be alphanumeric: {names}")
 
-    example = EXAMPLE_ITEM if table_name == "Items" else {}
+    rows = rows or [{}]  # an Excel table needs at least one data row
     for idx, col in enumerate(columns, start=1):
         letter = get_column_letter(idx)
         header = ws.cell(row=1, column=idx, value=col["name"])
@@ -130,9 +173,10 @@ def add_table(wb, table_name, spec):
 
         # Text format keeps ISO dates and IDs from being converted by Excel.
         number_format = "0.00" if col.get("type") == "decimal" else "0" if col.get("type") == "int" else "@"
-        cell = ws.cell(row=2, column=idx, value=example.get(col["name"]))
-        cell.number_format = number_format
-        cell.alignment = Alignment(wrap_text=True, vertical="top")
+        for r, row in enumerate(rows, start=2):
+            cell = ws.cell(row=r, column=idx, value=row.get(col["name"]))
+            cell.number_format = number_format
+            cell.alignment = Alignment(wrap_text=True, vertical="top")
         ws.column_dimensions[letter].width = col.get("width", 15)
 
         if "values" in col:
@@ -145,7 +189,7 @@ def add_table(wb, table_name, spec):
             ws.add_data_validation(dv)
 
     last_col = get_column_letter(len(columns))
-    table = Table(displayName=table_name, ref=f"A1:{last_col}2")
+    table = Table(displayName=table_name, ref=f"A1:{last_col}{len(rows) + 1}")
     table.tableStyleInfo = TableStyleInfo(name="TableStyleLight9", showRowStripes=True)
     ws.add_table(table)
     ws.freeze_panes = "G2" if table_name == "Items" else "B2"
@@ -180,4 +224,8 @@ def add_guide(wb, schema):
 
 
 if __name__ == "__main__":
-    build(Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT)
+    parser = argparse.ArgumentParser(description="Build ChiefOfStaff.xlsx from the schema.")
+    parser.add_argument("output", nargs="?", type=Path, default=DEFAULT_OUT)
+    parser.add_argument("--goals", type=Path, help="goals.yaml to load into the Goals table")
+    args = parser.parse_args()
+    build(args.output, args.goals)

@@ -68,6 +68,33 @@ class BuildWorkbookTests(WorkbookTestCase):
         self.assertIsInstance(due.value, str)
 
 
+class GoalsImportTests(WorkbookTestCase):
+    GOALS = (
+        "quarter: Q4 2026\nlast_updated: '2026-10-01'\n"
+        "objectives:\n"
+        "  - {name: Hire analysts, priority: 3, key_results: [Fill 2 roles], progress: 0.5, status: on_track}\n"
+        "  - {name: Close renewals, priority: 1, target: $2M, key_results: [Contoso, Fabrikam], status: at_risk}\n"
+        "personal:\n  - {name: Run 3x a week, progress: 0.2}\n"
+    )
+
+    def test_goals_are_ordered_and_personal_goals_prefixed(self):
+        goals = self.tmp / "goals.yaml"
+        goals.write_text(self.GOALS, encoding="utf-8")
+        rows = build_workbook.goal_rows(goals)
+        self.assertEqual([r["ID"] for r in rows], ["G1", "G2", "PG1"])
+        self.assertEqual(rows[0]["Goal"], "Close renewals")
+        self.assertEqual(rows[0]["KeyResults"], "Contoso\nFabrikam")
+        self.assertEqual(rows[0]["Quarter"], "Q4 2026")
+
+    def test_goals_land_in_table_and_lint_clean(self):
+        goals = self.tmp / "goals.yaml"
+        goals.write_text(self.GOALS, encoding="utf-8")
+        build_workbook.build(self.path, goals)
+        ws = load_workbook(self.path)["Goals"]
+        self.assertEqual(ws.tables["Goals"].ref, "A1:I4")
+        self.assertEqual(self.lint_errors(), [])
+
+
 class LintWorkbookTests(WorkbookTestCase):
     def test_fresh_workbook_is_clean(self):
         self.assertEqual(self.lint_errors(), [])
