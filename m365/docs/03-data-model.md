@@ -63,6 +63,10 @@ The Excel Online (Business) connector sets the rules:
 | `schedules.yaml` | Copilot Studio triggers / workflows (`m365/flows/`) |
 | `commands/*.md` | `m365/skills/*/SKILL.md` |
 
+## Keeping prose and schema in sync
+
+Skills, flows, and evals refer to columns in prose (`Status=done`, `Open eq 'Yes'`, `update_row(Items, …)`). `skills.py validate` checks every such reference against `schema/workbook.yaml`: unknown columns, dropdown values outside the allowed list, and unknown tables all fail CI. To rename a column, change the schema, run validate, and fix what it reports.
+
 ## Migration path
 
 When the list outgrows Excel (a second user, heavy concurrency, or real relational queries), move each table to a Dataverse table or SharePoint List with the same column names. The skills reference columns by name, so the changes are confined to the tool definitions and the "Data rules" section of the instructions.

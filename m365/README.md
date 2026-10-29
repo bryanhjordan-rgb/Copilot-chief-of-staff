@@ -49,7 +49,7 @@ m365/
 
 ```bash
 pip install pyyaml
-python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instruction length, evals present
+python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instruction length, evals, column refs
 python3 m365/scripts/skills.py package    # → dist/skills/<name>.zip for Copilot Studio → Skills → Upload
 python3 m365/scripts/skills.py export-evals  # → dist/evals.csv
 ```

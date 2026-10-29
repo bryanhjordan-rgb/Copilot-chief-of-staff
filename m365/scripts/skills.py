@@ -27,6 +27,7 @@ SKILLS_DIR = M365_DIR / "skills"
 INSTRUCTIONS = M365_DIR / "agent" / "instructions.md"
 DIST_DIR = M365_DIR.parent / "dist" / "skills"
 EVALS_DIR = M365_DIR / "evals"
+SCHEMA = M365_DIR / "schema" / "workbook.yaml"
 EVALS_CSV = M365_DIR.parent / "dist" / "evals.csv"
 
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
@@ -38,6 +39,10 @@ REQUIRED_METADATA = ("version", "signatures", "tools")
 REQUIRED_SECTIONS = ("## Goal", "## Steps", "## Guardrails", "## Done when")
 TEMPLATE_DIR = "_template"
 MIN_EVAL_CASES = 3
+# Column references in skills/flows/evals: Col=value, `Col eq '...'`, and tool(Table, ...)
+ASSIGN_RE = re.compile(r"\b([A-Z][a-z]+(?:[A-Z][a-z]+)*)=([A-Za-z_]+(?:\|[A-Za-z_]+)*)?")
+FILTER_RE = re.compile(r"\b([A-Z][A-Za-z]+) (?:eq|ne) '")
+TOOL_RE = re.compile(r"\b(?:get_row|update_row|list_rows|add_row)\((\w+)")
 EVAL_CASE_KEYS = {"id", "say", "given", "expect", "workbook", "must_not"}
 
 
@@ -131,6 +136,47 @@ def validate_evals(name):
     return [f"{name}: {e}" for e in errors]
 
 
+def reference_files():
+    return (
+        sorted(SKILLS_DIR.glob("*/SKILL.md"))
+        + [INSTRUCTIONS]
+        + sorted((M365_DIR / "flows").glob("*.md"))
+        + [M365_DIR / "flows" / "cards" / "README.md"]
+        + sorted(EVALS_DIR.glob("*.yaml"))
+    )
+
+
+def reference_errors(paths):
+    """Columns, dropdown values and tables named in prose must exist in the workbook schema."""
+    schema = yaml.safe_load(SCHEMA.read_text(encoding="utf-8"))
+    columns, allowed = set(), {}
+    for table in schema["tables"].values():
+        for col in table["columns"]:
+            columns.add(col["name"])
+            if "values" in col:
+                allowed.setdefault(col["name"], set()).update(col["values"])
+    errors = []
+    for path in paths:
+        where_file = path.relative_to(M365_DIR) if path.is_relative_to(M365_DIR) else path
+        for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            where = f"{where_file}:{n}"
+            for m in ASSIGN_RE.finditer(line):
+                col, value = m.group(1), m.group(2)
+                if col not in columns:
+                    errors.append(f"{where}: unknown column '{col}'")
+                elif value and col in allowed:
+                    for v in value.split("|"):
+                        if v not in allowed[col]:
+                            errors.append(f"{where}: {col}={v} not in {sorted(allowed[col])}")
+            for m in FILTER_RE.finditer(line):
+                if m.group(1) not in columns:
+                    errors.append(f"{where}: unknown column '{m.group(1)}' in filter")
+            for m in TOOL_RE.finditer(line):
+                if m.group(1) not in schema["tables"]:
+                    errors.append(f"{where}: unknown table '{m.group(1)}'")
+    return errors
+
+
 def skill_dirs():
     return sorted(
         d for d in SKILLS_DIR.iterdir()
@@ -153,6 +199,10 @@ def validate():
         errors.extend(skill_errors)
         if not skill_errors:
             print(f"ok   {skill_dir.name}")
+    ref_errors = reference_errors(reference_files())
+    if not ref_errors:
+        print("ok   column/table references match schema/workbook.yaml")
+    errors.extend(ref_errors)
     for error in errors:
         print(f"FAIL {error}")
     return not errors

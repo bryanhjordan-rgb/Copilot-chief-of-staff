@@ -340,6 +340,28 @@ class SkillsValidatorTests(unittest.TestCase):
         finally:
             shutil.rmtree(tmp)
 
+    def test_bad_references_are_reported(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            doc = tmp / "SKILL.md"
+            doc.write_text(
+                "Set Statuz=done and Status=closed.\n"
+                "Filter: Opn eq 'Yes'\n"
+                "Call update_row(Tasks, ID).\n"
+                "Fine: Status=done, Signal=accept|edit, list_rows(Items, filter: Open eq 'Yes').\n",
+                encoding="utf-8",
+            )
+            errors = skills.reference_errors([doc])
+            self.assertEqual(len(errors), 4, errors)
+            joined = " ".join(errors)
+            for fragment in ("unknown column 'Statuz'", "Status=closed", "'Opn' in filter", "unknown table 'Tasks'"):
+                self.assertIn(fragment, joined)
+        finally:
+            shutil.rmtree(tmp)
+
+    def test_repo_references_are_clean(self):
+        self.assertEqual(skills.reference_errors(skills.reference_files()), [])
+
     def test_missing_evals_are_reported(self):
         self.assertEqual(skills.validate_evals("no-such-skill"), ["no-such-skill: missing evals/no-such-skill.yaml"])
 
