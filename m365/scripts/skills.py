@@ -4,6 +4,7 @@
 Usage:
   python3 m365/scripts/skills.py validate            # all skills + instructions
   python3 m365/scripts/skills.py package             # validate, then zip to dist/skills/
+  python3 m365/scripts/skills.py prebuild            # same, into m365/kit/skills/ (committed, for no-code installs)
   python3 m365/scripts/skills.py check-instructions  # instructions length only
   python3 m365/scripts/skills.py export-evals        # evals -> dist/evals.csv (one row per case)
 
@@ -26,6 +27,8 @@ M365_DIR = Path(__file__).resolve().parent.parent
 SKILLS_DIR = M365_DIR / "skills"
 INSTRUCTIONS = M365_DIR / "agent" / "instructions.md"
 DIST_DIR = M365_DIR.parent / "dist" / "skills"
+PREBUILT_DIR = M365_DIR / "kit" / "skills"
+ZIP_DATE = (2026, 1, 1, 0, 0, 0)  # fixed date + no compression: rebuilt zips are byte-identical on any machine
 EVALS_DIR = M365_DIR / "evals"
 SCHEMA = M365_DIR / "schema" / "workbook.yaml"
 EVALS_CSV = M365_DIR.parent / "dist" / "evals.csv"
@@ -208,16 +211,18 @@ def validate():
     return not errors
 
 
-def package():
+def package(out_dir=DIST_DIR):
     if not validate():
         return False
-    DIST_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     for skill_dir in skill_dirs():
-        target = DIST_DIR / f"{skill_dir.name}.zip"
-        with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
+        target = out_dir / f"{skill_dir.name}.zip"
+        with zipfile.ZipFile(target, "w", zipfile.ZIP_STORED) as zf:
             for file in sorted(skill_dir.rglob("*")):
                 if file.is_file():
-                    zf.write(file, file.relative_to(skill_dir))
+                    info = zipfile.ZipInfo(file.relative_to(skill_dir).as_posix(), ZIP_DATE)
+                    info.external_attr = 0o644 << 16
+                    zf.writestr(info, file.read_bytes())
         print(f"packaged {target.relative_to(M365_DIR.parent)}")
     return True
 
@@ -253,6 +258,7 @@ def instructions_only():
 COMMANDS = {
     "validate": validate,
     "package": package,
+    "prebuild": lambda: package(PREBUILT_DIR),
     "check-instructions": instructions_only,
     "export-evals": export_evals,
 }

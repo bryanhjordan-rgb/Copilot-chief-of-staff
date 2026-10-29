@@ -14,6 +14,7 @@ This folder is the agent's source of truth ("agent-as-code"). Copilot Studio is 
 ```
 m365/
 ├── docs/
+│   ├── 00-install-no-code.md   # install from the browser only: no scripts, prebuilt files
 │   ├── 01-scope.md             # vision, jobs, in/out of scope, metrics, assumptions
 │   ├── 02-architecture.md      # platform choice, components, core flows, security
 │   ├── 03-data-model.md        # workbook layout, cell conventions, connector constraints
@@ -34,6 +35,7 @@ m365/
 ├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
+├── kit/skills/*.zip            # prebuilt skill zips (committed; CI checks they match the source)
 ├── tests/                      # unittest suite for the scripts
 ├── office-scripts/             # TypeScript run inside the workbook (skill mining, weekly scorecard)
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
@@ -54,6 +56,7 @@ m365/
 pip install pyyaml
 python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instruction length, evals, column refs
 python3 m365/scripts/skills.py package    # → dist/skills/<name>.zip for Copilot Studio → Skills → Upload
+python3 m365/scripts/skills.py prebuild   # → m365/kit/skills/ (commit these after changing a skill; CI fails if stale)
 python3 m365/scripts/skills.py export-evals  # → dist/evals.csv
 ```
 
@@ -76,7 +79,7 @@ python3 m365/scripts/lint_workbook.py ~/Downloads/ChiefOfStaff.xlsx
 
 It flags rows that would trip up the agent or skew the metrics: Open/Status out of sync, malformed links or dates, done items missing a signature, confidential items with notes, broken Goal/Skill references. It also prints the share of open items with at least one link (the Phase 1 exit metric).
 
-CI runs `validate`, a workbook build, the linter, and `python3 -m unittest discover -s m365/tests` on every PR that touches `m365/`.
+CI runs `validate`, a workbook build, the linter, a check that the committed workbook and `kit/skills/` zips match a fresh build, and `python3 -m unittest discover -s m365/tests` on every PR that touches `m365/`.
 
 ## Deployment kit
 
@@ -87,6 +90,8 @@ python3 m365/scripts/release.py --goals goals.yaml   # uses agent/profile.yaml i
 Writes `dist/ChiefOfStaff-kit.zip`: the workbook, rendered instructions, every skill zip, the cards, the Office Script, and a `CHECKLIST.md` in deploy order with each skill's version. CI builds an unpersonalized kit on every PR, downloadable from the run's artifacts.
 
 ## Start here
+
+**Can't run code at work?** Follow [00-install-no-code.md](docs/00-install-no-code.md). Everything it uses is prebuilt and downloadable from GitHub.
 
 1. [07-tenant-readiness.md](docs/07-tenant-readiness.md) — confirm what your tenant allows
 2. [08-build-guide.md](docs/08-build-guide.md) — Phase 1 build, step by step, with smoke tests
