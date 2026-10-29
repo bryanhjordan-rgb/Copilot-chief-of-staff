@@ -42,7 +42,8 @@ m365/
     ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
     ├── lint_workbook.py        # check a live workbook against schema + cell conventions
     ├── mine.py                 # reference implementation of the mining Office Script
-    └── render_instructions.py  # profile.yaml → dist/instructions.md (paste into Copilot Studio)
+    ├── render_instructions.py  # profile.yaml → dist/instructions.md (paste into Copilot Studio)
+    └── release.py              # one-command deployment kit → dist/ChiefOfStaff-kit.zip
 ```
 
 ## Working with skills
@@ -74,6 +75,14 @@ python3 m365/scripts/lint_workbook.py ~/Downloads/ChiefOfStaff.xlsx
 It flags rows that would trip up the agent or skew the metrics: Open/Status out of sync, malformed links or dates, done items missing a signature, confidential items with notes, broken Goal/Skill references. It also prints the share of open items with at least one link (the Phase 1 exit metric).
 
 CI runs `validate`, a workbook build, the linter, and `python3 -m unittest discover -s m365/tests` on every PR that touches `m365/`.
+
+## Deployment kit
+
+```bash
+python3 m365/scripts/release.py --goals goals.yaml   # uses agent/profile.yaml if present
+```
+
+Writes `dist/ChiefOfStaff-kit.zip`: the workbook, rendered instructions, every skill zip, the cards, the Office Script, and a `CHECKLIST.md` in deploy order with each skill's version. CI builds an unpersonalized kit on every PR, downloadable from the run's artifacts.
 
 ## Start here
 

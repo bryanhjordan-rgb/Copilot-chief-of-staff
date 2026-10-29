@@ -26,6 +26,7 @@ build_workbook = load("build_workbook")
 lint_workbook = load("lint_workbook")
 mine = load("mine")
 render_instructions = load("render_instructions")
+release = load("release")
 
 
 class WorkbookTestCase(unittest.TestCase):
@@ -316,6 +317,35 @@ class RenderInstructionsTests(unittest.TestCase):
         profile["tone"] = "x" * 3000
         with self.assertRaisesRegex(render_instructions.ProfileError, "chars"):
             render_instructions.render(self.template(), profile)
+
+
+class ReleaseKitTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.saved = (release.KIT, release.KIT_ZIP)
+        release.KIT, release.KIT_ZIP = self.tmp / "kit", self.tmp / "kit.zip"
+
+    def tearDown(self):
+        release.KIT, release.KIT_ZIP = self.saved
+        shutil.rmtree(self.tmp)
+
+    def test_kit_with_profile(self):
+        kit = release.build_kit(Path(__file__).resolve().parent.parent / "agent" / "profile.example.yaml")
+        names = {p.relative_to(kit).as_posix() for p in kit.rglob("*") if p.is_file()}
+        for expected in ("ChiefOfStaff.xlsx", "instructions.md", "CHECKLIST.md", "skills/intake.zip",
+                         "cards/daily-brief.card.json", "office-scripts/mine-signatures.ts"):
+            self.assertIn(expected, names)
+        self.assertNotIn("office-scripts/excelscript.d.ts", names)
+        self.assertNotIn("{{", (kit / "instructions.md").read_text(encoding="utf-8"))
+        checklist = (kit / "CHECKLIST.md").read_text(encoding="utf-8")
+        self.assertIn("rendered from your profile", checklist)
+        for skill_dir in skills.skill_dirs():
+            self.assertIn(f"`{skill_dir.name}`", checklist)
+        self.assertTrue(release.KIT_ZIP.is_file())
+
+    def test_kit_without_profile_is_flagged(self):
+        kit = release.build_kit(None)
+        self.assertIn("**NOT rendered**: still has {{PLACEHOLDERS}}", (kit / "CHECKLIST.md").read_text(encoding="utf-8"))
 
 
 class SkillsValidatorTests(unittest.TestCase):

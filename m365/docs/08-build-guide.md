@@ -2,6 +2,8 @@
 
 **Goal:** a working conversational chief of staff, in about 90 minutes. You can say "add …", "plan my day", and "what now?" in Microsoft 365 Copilot or Teams, and the agent reads and writes `ChiefOfStaff.xlsx`.
 
+**Shortcut:** `python3 m365/scripts/release.py --goals goals.yaml` builds everything this guide uploads (workbook, instructions, skill zips) into `dist/ChiefOfStaff-kit.zip`, with a tick-list `CHECKLIST.md`.
+
 **Before you start:** readiness rows R2 (maker access) and R3 (Excel connector allowed) in [07-tenant-readiness.md](07-tenant-readiness.md) must be "yes". Copilot Studio menus move often, so if a label below doesn't match, look for the nearest equivalent and note it in the iteration log.
 
 ---
