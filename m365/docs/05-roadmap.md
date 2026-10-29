@@ -39,6 +39,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 - [ ] Import `reconcile` skill. Manual trigger first ("done with X")
 - [ ] Import `triage` skill (read + draft only; sends need "Send")
 - [ ] Import `meeting-prep` and `meeting-debrief`; daily brief points prep-needed meetings at meeting-prep
+- [ ] Add your 10–20 key people to the People sheet ("add <name> as tier N"), import `relationship-check`
 - [ ] Workflow: completion detector (`flows/completion-detector.md`): linked thread replied / meeting ended / Planner task completed → ask "Mark complete?"
 - [ ] Feedback capture on the brief card (Accept/Edit/Re-plan → Feedback row)
 
@@ -59,7 +60,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 - [ ] Graduate proven playbooks to native skills via PR → `scripts/skills.py package` → import
 - [x] CI: GitHub Action runs `scripts/skills.py validate` and builds the workbook on PRs
 - [x] Port `/triage` (Outlook + Teams) as a skill
-- [ ] Port `/enrich` (people context) as a skill
+- [x] Port `/enrich` as the `relationship-check` skill + People table
 - [x] Meeting prep / debrief skills (uses Teams meeting recap via Work IQ)
 - [x] Metrics view: weekly scorecard from Items, Skills, and Feedback (`weekly-scorecard` Office Script, fed into the weekly review)
 - [ ] Revisit ADR-006: migrate to Dataverse/SharePoint Lists if Excel limits bite
@@ -88,3 +89,4 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 | 15 | 2026-10-29 | `release.py`: validates, then builds `dist/ChiefOfStaff-kit.zip` (workbook ± goals, rendered or flagged-unrendered instructions, skill zips, cards, Office Script, CHECKLIST.md with commit + skill versions). CI uploads the kit as an artifact. 2 tests. | Daily-use guide |
 | 16 | 2026-10-29 | Daily-use guide (09-daily-use.md): daily/weekly rhythm, phrase cheat sheet per skill, how feedback becomes fixes, rules for editing the sheet by hand, what the agent never does, weekly upkeep. Linked from README, build guide, kit checklist. | Weekly scorecard |
 | 17 | 2026-10-29 | `weekly-scorecard` Office Script + Python twin: the 01-scope success metrics (completed, on-time %, record %, link coverage %, minutes by goal, brief acceptance, skill runs/success %, est. minutes saved). Weekly flow runs it; skill-miner 0.2.3 reports it. Reference + parity tests (3 windows). | Relationship-check skill (not started); first live Phase 1 week |
+| 18 | 2026-10-29 | `relationship-check` skill (port of `/enrich stale`): tier cadences 14/30/60 or per-person override, refreshes LastContact from real two-way interactions before flagging, personal reason to reach out (open items → dated notes → recent activity), Draft/Track/Snooze, add/retier/note. New People table (schema 0.3.0) with linter checks and fixture people. 5 evals. | First live Phase 1 week |

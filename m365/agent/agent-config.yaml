@@ -22,6 +22,7 @@ skills:                                   # native skills; import zips from dist
   - triage           # phase 2 (optional earlier: read + draft only)
   - meeting-prep     # phase 2
   - meeting-debrief  # phase 2 (needs Teams recap/transcript via Work IQ, or pasted notes)
+  - relationship-check  # phase 2 (People sheet)
 
 knowledge:
   - type: work-iq                         # R6 (preview); fallback: outlook/teams connectors below
@@ -31,7 +32,7 @@ store:                                    # ADR-006 — Excel workbook, built fr
   file: "OneDrive: /Apps/ChiefOfStaff/ChiefOfStaff.xlsx"
   location: me
   document_library: OneDrive
-  tables: {Items: ID, Goals: ID, Skills: Name, Feedback: ID}   # table: key column
+  tables: {Items: ID, Goals: ID, Skills: Name, Feedback: ID, People: Email}   # table: key column
 
 tools:
   excel:                                  # Excel Online (Business) connector — add each action as a tool

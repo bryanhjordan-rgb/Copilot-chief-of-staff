@@ -30,7 +30,7 @@ m365/
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
 │   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/  triage/
-│   ├── meeting-prep/  meeting-debrief/
+│   ├── meeting-prep/  meeting-debrief/  relationship-check/
 ├── evals/                      # scenario tests per skill + fixtures (README explains scoring)
 ├── schema/workbook.yaml        # workbook schema (source of truth)
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
@@ -66,7 +66,7 @@ python3 m365/scripts/build_workbook.py ~/ChiefOfStaff.xlsx --goals goals.yaml   
 python3 m365/scripts/build_workbook.py ~/ChiefOfStaff-test.xlsx --fixtures m365/evals/fixtures.yaml  # eval test data
 ```
 
-Upload `ChiefOfStaff.xlsx` to OneDrive (`/Apps/ChiefOfStaff/`). The **List** sheet is the daily list. Goals, Skills, and Feedback support prioritization and the learning loop. Change columns in `schema/workbook.yaml` and rebuild; don't edit the headers by hand. Layout and connector rules: [03-data-model.md](docs/03-data-model.md).
+Upload `ChiefOfStaff.xlsx` to OneDrive (`/Apps/ChiefOfStaff/`). The **List** sheet is the daily list. Goals, Skills, and Feedback support prioritization and the learning loop; People tracks relationships. Change columns in `schema/workbook.yaml` and rebuild; don't edit the headers by hand. Layout and connector rules: [03-data-model.md](docs/03-data-model.md).
 
 Check a live copy at any time (download it from OneDrive first):
 

@@ -28,6 +28,8 @@ FEEDBACK_ID_RE = re.compile(r"^F-\d{8}-\d{6}$")
 LINK_RE = re.compile(r"^\[[a-z_]+\] .+ \| \S+$")
 SIGNATURE_RE = re.compile(r"^[a-z0-9-]+\|[a-z0-9-]+\|[a-z0-9-]+$")
 SLOT_RE = re.compile(r"^\d{2}:\d{2}-\d{2}:\d{2}$")
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+NOTE_DATE_RE = re.compile(r"\(added \d{4}-\d{2}-\d{2}\)")
 LINK_COLUMNS = ("SourceLink", "ContextLinks", "Artifacts")
 CLOSED_STATUSES = {"done", "dropped"}
 EXAMPLE_ID = "I-EXAMPLE"
@@ -176,6 +178,20 @@ def check_skills(skills, report):
             report.error(where, "active playbook has no Body")
 
 
+def check_people(people, report):
+    for email, row in keyed(people, "Email").items():
+        where = f"People!{email}"
+        if not EMAIL_RE.match(email):
+            report.error(where, "Email doesn't look like an email address")
+        elif email != email.lower():
+            report.warn(where, "Email should be lowercase so lookups match")
+        if not text(row.get("Tier")):
+            report.error(where, "Tier is empty (1, 2 or 3)")
+        for line in filter(None, (l.strip() for l in text(row.get("Notes")).splitlines())):
+            if not NOTE_DATE_RE.search(line):
+                report.warn(where, f"note without '(added YYYY-MM-DD)': {line[:50]}")
+
+
 def check_feedback(feedback, report):
     for fid in keyed(feedback, "ID"):
         if not FEEDBACK_ID_RE.match(fid):
@@ -198,6 +214,7 @@ def lint(path):
     open_count, linked_count = check_items(tables["Items"], goal_ids, skill_names, report)
     check_skills(tables["Skills"], report)
     check_feedback(tables["Feedback"], report)
+    check_people(tables["People"], report)
     return report, open_count, linked_count
 
 

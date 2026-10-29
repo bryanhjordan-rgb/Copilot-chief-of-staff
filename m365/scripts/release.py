@@ -78,7 +78,7 @@ Full walkthrough: `m365/docs/08-build-guide.md`. Day-to-day use: `m365/docs/09-d
 - [ ] Publish to Microsoft 365 Copilot + Teams
 
 ## Phase 2 (automation)
-- [ ] Skills › Upload: `reconcile`, `triage`, `meeting-prep`, `meeting-debrief`
+- [ ] Skills › Upload: `reconcile`, `triage`, `meeting-prep`, `meeting-debrief`, `relationship-check`
 - [ ] Flow: daily brief (`m365/flows/daily-brief.md`) with `cards/daily-brief.card.json`
 - [ ] Flow: completion detector with `cards/completion-confirm.card.json`
 

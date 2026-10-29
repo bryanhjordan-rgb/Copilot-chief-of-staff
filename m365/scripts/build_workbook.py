@@ -13,7 +13,7 @@ objectives become G1, G2, ... (in priority order) and personal goals PG1, PG2, .
 Build to a path outside the repo (e.g. ~/ChiefOfStaff.xlsx) so your goals aren't
 committed by accident.
 
---fixtures loads the eval seed data (Goals + Items) instead of the example row,
+--fixtures loads the eval seed data (Goals, Items, People) instead of the example row,
 resolving TODAY, TODAY+n and TODAY-n against --today (default: the real date).
 """
 
@@ -148,7 +148,7 @@ def fixture_rows(fixtures_path, schema, today):
     """Eval fixtures with TODAY±n resolved; datetime columns get a 09:00 time."""
     data = yaml.safe_load(Path(fixtures_path).read_text(encoding="utf-8")) or {}
     seed = {}
-    for table, key in (("Goals", "goals"), ("Items", "items")):
+    for table, key in (("Goals", "goals"), ("Items", "items"), ("People", "people")):
         types = {c["name"]: c.get("type") for c in schema["tables"][table]["columns"]}
         rows = []
         for row in data.get(key) or []:

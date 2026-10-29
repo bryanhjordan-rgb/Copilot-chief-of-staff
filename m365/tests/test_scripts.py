@@ -60,7 +60,7 @@ class BuildWorkbookTests(WorkbookTestCase):
     def test_tables_and_keys_match_schema(self):
         wb = load_workbook(self.path)
         found = {name for ws in wb.worksheets for name in ws.tables}
-        self.assertEqual(found, {"Items", "Goals", "Skills", "Feedback"})
+        self.assertEqual(found, {"Items", "Goals", "Skills", "Feedback", "People"})
         self.assertEqual(wb.sheetnames[0], "List")
         self.assertEqual(wb["List"]["A1"].value, "ID")
 
@@ -170,6 +170,14 @@ class LintWorkbookTests(WorkbookTestCase):
     def test_choice_value_outside_schema(self):
         self.set_cells("List", 2, {"Status": "finished"})
         self.assertTrue(any("Status='finished' not in" in e for e in self.lint_errors()))
+
+    def test_people_rows_are_checked(self):
+        self.set_cells("People", 2, {"Email": "not-an-email", "Name": "X", "Notes": "Likes hiking"})
+        errors = " ".join(self.lint_errors())
+        self.assertIn("doesn't look like an email", errors)
+        self.assertIn("Tier is empty", errors)
+        report, _, _ = lint_workbook.lint(self.path)
+        self.assertTrue(any("(added YYYY-MM-DD)" in w for w in report.warnings))
 
     def test_skill_successes_cannot_exceed_runs(self):
         self.set_cells("Skills", 2, {"Name": "send-weekly-status", "Runs": 2, "Successes": 3})

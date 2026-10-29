@@ -12,6 +12,7 @@
 | Goals | `Goals` | ID | Active objectives (from `goals.yaml`); drives goal-fit scoring |
 | Skills | `Skills` | Name | Skill registry: proposals, playbooks, native skills, run counters |
 | Feedback | `Feedback` | ID | Accept/edit/reject/corrections, plus skill-run outcomes |
+| People | `People` | Email | Relationships to keep warm: tier (cadence 14/30/60 days), last contact, dated notes, next touch |
 
 ## Items: column groups
 
@@ -59,7 +60,7 @@ The Excel Online (Business) connector sets the rules:
 |---------------|---------------------|
 | `goals.yaml` | Goals table (one-time copy) |
 | `my-tasks.yaml` | Items table |
-| `contacts/*.md` | Phase 4: People context from Work IQ, or a Contacts sheet |
+| `contacts/*.md` | People table (tier, last contact, dated notes), maintained by the relationship-check skill |
 | `schedules.yaml` | Copilot Studio triggers / workflows (`m365/flows/`) |
 | `commands/*.md` | `m365/skills/*/SKILL.md` |
 

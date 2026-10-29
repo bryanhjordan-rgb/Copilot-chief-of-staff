@@ -1,0 +1,43 @@
+skill: relationship-check
+cases:
+  - id: relationship-check-01-check
+    given: "Fixture People; no newer interactions in Work IQ than LastContact"
+    say: "Who am I losing touch with?"
+    expect:
+      - "OVERDUE lists Dana Ortiz (Tier 1, 21 days vs 14) first, then Riley Shah (Tier 2, 45 vs 30)"
+      - "Dana's reason uses her note about moving to Lisbon"
+      - "Jordan Wu (Tier 3, 58 vs 60) is APPROACHING; Sam Lee is healthy and not listed"
+      - "Alex Kim (Tier 2, 12 vs 30) is healthy and not listed"
+    workbook:
+      - "NextTouch filled for Dana, Riley, Jordan; Updated set"
+    must_not:
+      - "Drafts or sends messages unprompted"
+
+  - id: relationship-check-02-refresh
+    given: "Work IQ shows a two-way email thread with old.colleague@example.net from 2 days ago"
+    say: "Relationship check"
+    expect:
+      - "Riley Shah is not overdue (refreshed) and doesn't appear as overdue"
+    workbook:
+      - "People row old.colleague@example.net: LastContact = 2 days ago, LastChannel=email"
+    must_not:
+      - "Counts a newsletter or CC-only email as contact"
+
+  - id: relationship-check-03-draft
+    say: "Draft 1"
+    expect:
+      - "A short message to Dana in the user's voice, referencing the Lisbon move, shown as a draft"
+    must_not:
+      - "Sends it"
+
+  - id: relationship-check-04-note
+    say: "Note that Dana starts her new role in January"
+    workbook:
+      - "Dana's Notes keeps the old lines and adds 'Starts new role in January (added <today>)'"
+
+  - id: relationship-check-05-snooze
+    say: "Snooze Jordan"
+    expect:
+      - "Says Jordan's cadence is now 120 days"
+    workbook:
+      - "People row peer@fabrikam.com: CadenceDays=120"

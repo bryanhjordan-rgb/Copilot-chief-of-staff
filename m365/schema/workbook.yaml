@@ -15,7 +15,7 @@
 #     round-trip through the connector without serial-number conversion.
 #   - Multi-value cells use one entry per line. Links: "[type] Title | https://url".
 
-version: 0.2.0
+version: 0.3.0
 file: ChiefOfStaff.xlsx
 
 tables:
@@ -115,3 +115,19 @@ tables:
       - {name: Theme, width: 30, note: "e.g. rank:meetings-overweighted, tone:too-formal"}
       - {name: Applied, width: 9, values: ["Yes", "No"]}
       - {name: ResultingChange, width: 30, note: "skill/instruction version that addressed it"}
+
+  People:
+    sheet: People
+    key: Email
+    description: Relationships worth keeping warm. Tier sets the check-in cadence (1 = 14 days, 2 = 30, 3 = 60).
+    columns:
+      - {name: Email, width: 28, note: "key; lowercase"}
+      - {name: Name, width: 22}
+      - {name: Tier, width: 6, values: ["1", "2", "3"], note: "1 inner circle · 2 active network · 3 extended"}
+      - {name: Role, width: 24, note: "role and company"}
+      - {name: CadenceDays, width: 12, type: int, note: "optional override of the tier cadence"}
+      - {name: LastContact, width: 12, type: date, note: "latest two-way interaction found"}
+      - {name: LastChannel, width: 12, values: [email, teams, meeting, call, in_person]}
+      - {name: Notes, width: 50, note: "one per line, dated: 'Training for a marathon (added 2026-10-29)'"}
+      - {name: NextTouch, width: 40, note: "suggested reason to reach out, refreshed by relationship-check"}
+      - {name: Updated, width: 17, type: datetime}

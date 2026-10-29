@@ -16,6 +16,7 @@ How to work with the agent once it's live. Talk to it in Microsoft 365 Copilot C
 | **After a meeting** | "Debrief the Contoso meeting." | Decisions, your actions → items, their actions → waiting-on, follow-up draft. Writes only after you say OK. |
 | **Inbox piling up** | "Triage" or "triage quick". | Tiered list with drafts. Nothing sent without "Send N". |
 | **Something's done** | "Done with the pricing prep." (or tap **Mark complete** on the card) | Writes the completion record, proposes goal progress, offers follow-ups. |
+| **Monday** | "Relationship check." | Who's overdue or close to it for their tier, with a personal reason to reach out and an optional draft. |
 | **Friday 15:00** (Phase 3) | Approve or reject proposals on the weekly card. | Week summary + up to 3 skill proposals, patches, retirements. |
 
 ## Phrase cheat sheet
@@ -30,6 +31,7 @@ How to work with the agent once it's live. Talk to it in Microsoft 365 Copilot C
 | "prep me for …", "brief me on the 2pm" | meeting-prep | Works best 15–30 min before the meeting |
 | "debrief …", "capture actions from …" | meeting-debrief | Needs a Teams recap/transcript, or paste 3 bullets |
 | "review my week", "what should be a skill?" | skill-miner | Then "approve 1", "reject 2", "approve patch 3" |
+| "relationship check", "who am I losing touch with?" | relationship-check | Then "Draft 1", "Track 2", "Snooze 3"; "add Dana as tier 1"; "note that Dana is moving to Lisbon" |
 | "explore" / "just thinking out loud" | — | Turns off pushback; thinking-partner mode |
 
 ## Giving feedback (this is how it learns)
