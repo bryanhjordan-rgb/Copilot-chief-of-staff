@@ -16,7 +16,7 @@ m365/
 ├── docs/
 │   ├── 01-scope.md             # vision, jobs, in/out of scope, metrics, assumptions
 │   ├── 02-architecture.md      # platform choice, components, core flows, security
-│   ├── 03-data-model.md        # how the Dataverse tables relate
+│   ├── 03-data-model.md        # workbook layout, cell conventions, connector constraints
 │   ├── 04-skill-lifecycle.md   # observe → mine → propose → playbook → native
 │   ├── 05-roadmap.md           # phases, exit tests, iteration log
 │   ├── 06-decisions.md         # ADRs + open questions
@@ -27,9 +27,12 @@ m365/
 ├── skills/                     # SKILL.md (open Agent Skills format)
 │   ├── _template/
 │   ├── prioritize/  intake/  daily-brief/  reconcile/  skill-miner/
-├── schema/dataverse-tables.yaml
+├── schema/workbook.yaml        # workbook schema (source of truth)
+├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
-└── scripts/skills.py           # validate + package skills for import
+└── scripts/
+    ├── skills.py               # validate + package skills for import
+    └── build_workbook.py       # build ChiefOfStaff.xlsx from the schema
 ```
 
 ## Working with skills
@@ -40,7 +43,16 @@ python3 m365/scripts/skills.py validate   # frontmatter, naming, sections, instr
 python3 m365/scripts/skills.py package    # → dist/skills/<name>.zip for Copilot Studio → Skills → Upload
 ```
 
-CI runs `validate` on every PR that touches `m365/`.
+## The workbook (v1 store)
+
+```bash
+pip install pyyaml openpyxl
+python3 m365/scripts/build_workbook.py    # → m365/workbook/ChiefOfStaff.xlsx
+```
+
+Upload `ChiefOfStaff.xlsx` to OneDrive (`/Apps/ChiefOfStaff/`). The **List** sheet is the daily list. Goals, Skills, and Feedback support prioritization and the learning loop. Change columns in `schema/workbook.yaml` and rebuild; don't edit the headers by hand. Layout and connector rules: [03-data-model.md](docs/03-data-model.md).
+
+CI runs `validate` and a workbook build on every PR that touches `m365/`.
 
 ## Start here
 

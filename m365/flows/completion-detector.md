@@ -6,19 +6,21 @@ The detector itself is deterministic. It calls the agent only when it has eviden
 
 ## Evidence rules (any one is enough to ask)
 
-| Link type on an open item | Evidence | Check |
-|---------------------------|----------|-------|
-| email (relation=source) | User sent a reply on the thread after the item's creation | Outlook → Get emails (Sent Items, conversationId = graph_id) |
-| meeting (relation=context, item_type=meeting_prep) | Meeting end time has passed | Outlook calendar → Get event (graph_id) |
-| file (relation=output) | File modified by the user after item creation and item is in_progress | SharePoint/OneDrive → Get file properties |
-| planner_task | Planner task percentComplete = 100 | Planner → Get task |
+| Link on an open item | Evidence | Check |
+|----------------------|----------|-------|
+| SourceLink `[email]` | User sent a reply on the thread after Created | Outlook → Get emails (Sent Items, same conversation) |
+| ContextLinks `[meeting]` with Type=meeting_prep | Meeting end time has passed | Outlook → Get calendar view (today) and match the meeting |
+| Artifacts / ContextLinks `[file]` with Status=in_progress | File modified by the user after Created | OneDrive/SharePoint → Get file metadata using path |
+| `[planner]` link | Planner task percentComplete = 100 | Planner → Get task |
 
 ## Steps
-1. List open `cos_item` rows that have ≥1 link of the types above. Skip items asked about in the last 24h (track this in `cos_activity` action=`completion_asked`).
-2. For each item, evaluate the rules. Collect `{item_id, evidence_text}`.
-3. If there's any evidence: run the agent with
+1. **Excel → List rows** (Items, filter `Open eq 'Yes'`). Parse SourceLink and ContextLinks lines (`[type] Title | url`).
+2. Skip items whose History has a `completion_asked` line in the last 24h.
+3. For each item, evaluate the rules. Collect `{ID, evidence_text}`.
+4. If there's any evidence: run the agent with
    `Run reconcile in detector mode for these items: <json>. Ask the user to confirm each.`
-4. Log `completion_asked` to `cos_activity` for each item asked about.
+5. For each item asked about: **Get a row**, then **Update a row** with History + `<now> flow completion_asked <evidence>`.
 
 ## Notes
 - A meeting-prep item whose meeting has passed is the highest-confidence signal. Start with that rule alone if time is short.
+- Excel is locked for up to 6 minutes after connector use. Keep this flow's writes to one batch at the end.

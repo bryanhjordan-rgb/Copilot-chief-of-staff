@@ -35,7 +35,7 @@ The Claude Code kit at the repo root is the design reference. Its principles (go
 ## 4. In scope (v1)
 
 - Conversational agent in M365 Copilot Chat and Teams
-- System of record for items, links, activity, completion records, feedback, and skills (Dataverse; see ADR-002)
+- System of record: one Excel workbook in OneDrive (`ChiefOfStaff.xlsx`) holding the list with context, goals, skills, and feedback (ADR-006)
 - Daily brief, generated on schedule and on demand
 - Intake → investigate → prioritize loop
 - Completion reconciliation, triggered manually first and by detection later
@@ -66,7 +66,7 @@ The Claude Code kit at the repo root is the design reference. Its principles (go
 ## 7. Constraints and assumptions (flagged)
 
 - **A1:** The user has a Microsoft 365 Copilot license and Copilot Studio maker rights in a work environment. *Verify in Phase 0.*
-- **A2:** A Dataverse-backed Power Platform environment is available (Copilot Studio environments normally include one). Fallback: SharePoint Lists.
+- **A2:** The Excel Online (Business) connector is allowed in the agent's environment (it's a Standard connector). The workbook lives in your OneDrive.
 - **A3:** IT allows Work IQ (preview) or, failing that, the standard Office 365 Outlook / Teams / Planner connectors.
 - **A4:** Scheduled (autonomous) runs consume Copilot Credits billed to the tenant. Volume is low: ~2–4 runs/day.
 - **A5:** Copilot Studio skills (SKILL.md, open Agent Skills format) are early. Import is done in the UI, with no public create/update API found as of 2026-10. The design therefore keeps a runtime "playbook" tier that works without republishing (see 04-skill-lifecycle.md).

@@ -21,34 +21,30 @@ skills:                                   # native skills; import zips from dist
   - skill-miner      # phase 3
 
 knowledge:
-  - type: work-iq                         # R6 (preview); fallback: connectors below
+  - type: work-iq                         # R6 (preview); fallback: outlook/teams connectors below
     scopes: [mail, calendar, files, teams, people]
-  - type: sharepoint
-    note: "Optional site/folder holding personal context docs (constraints, team notes)"
+
+store:                                    # ADR-006 — Excel workbook, built from schema/workbook.yaml
+  file: "OneDrive: /Apps/ChiefOfStaff/ChiefOfStaff.xlsx"
+  location: me
+  document_library: OneDrive
+  tables: {Items: ID, Goals: ID, Skills: Name, Feedback: ID}   # table: key column
 
 tools:
-  dataverse:                              # system of record (ADR-002)
-    tables: [cos_goal, cos_item, cos_link, cos_activity, cos_record, cos_brief, cos_feedback, cos_skill, cos_skill_run]
-    operations: [list, get, create, update]
+  excel:                                  # Excel Online (Business) connector — add each action as a tool
+    connector: excelonlinebusiness
+    actions:
+      - name: list_rows                   # List rows present in a table
+        settings: {dateTimeFormat: ISO 8601, pagination: on}
+        note: "One filter function per column. Open items: Open eq 'Yes'. Active skills: Status eq 'active'."
+      - name: get_row                     # Get a row (key column per table above)
+      - name: add_row                     # Add a row into a table
+      - name: update_row                  # Update a row — blank inputs leave cells unchanged
     confirmation: none                    # internal state; no outbound effect
-  custom_tools:                           # implement as agent workflows (deterministic) over Dataverse
-    - name: find_playbook
-      input: {signature: string}
-      output: "cos_skill row (tier=playbook|native, status=active) whose signatures include input, else null"
-    - name: propose_skill
-      input: {name: string, description: string, signatures: string, body: string, evidence: "string[]", est_minutes_saved: int}
-      output: "new cos_skill row, status=proposed"
-    - name: log_skill_run
-      input: {skill: string, item: string, outcome: "success|partial|fail", user_edits: int, minutes_saved_est: int}
-      effect: "inserts cos_skill_run; recomputes cos_skill.runs, success_rate, last_used"
-    - name: log_feedback
-      input: {target_type: string, target_ref: string, signal: string, detail: string, theme: string}
-    - name: get_free_blocks
-      input: {date: date}
-      output: "free calendar blocks ≥25 min between earliest-meeting and home-by constraints"
+    limits: "100 calls/min per connection; writes visible after up to 30 s; file lock up to 6 min after connector use"
   outlook:
     connector: office365-outlook          # or Outlook MCP (Agent 365) if allowed (R7)
-    operations: [search, get_message, create_draft, send]
+    operations: [search, get_message, get_calendar_view, create_draft, send]
     confirmation: required                # ADR-005 — every send asks the user
   teams:
     operations: [search_messages, get_chat, post_adaptive_card, post_message]

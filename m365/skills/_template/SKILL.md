@@ -7,7 +7,7 @@ metadata:
   version: "0.1.0"
   tier: "native"
   signatures: "verb|object|counterpart"
-  tools: "dataverse, work-iq"
+  tools: "excel, work-iq"
   status: "draft"
 ---
 
@@ -25,10 +25,10 @@ One sentence: the outcome when this skill finishes successfully.
 3. Keep side effects explicit. Anything outbound is **draft only**.
 
 ## Output
-The exact shape the user sees (template block) and what gets written to Dataverse.
+The exact shape the user sees (template block) and which workbook cells get written.
 
 ## Guardrails
 - What this skill must never do.
 
 ## Done when
-- Checklist of observable completion criteria. Call `log_skill_run` if this ran as a playbook.
+- Checklist of observable completion criteria. If this ran as a playbook, update the Skills row (Runs, Successes, LastUsed) and add a Feedback row (TargetType skill_run).
