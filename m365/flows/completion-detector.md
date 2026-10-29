@@ -1,6 +1,6 @@
 # Workflow: Completion detector
 
-**Phase:** 2 · **Trigger:** Recurrence, Mon–Fri every 2h 09:00–17:00 · **Est. credits:** 0–4 agent runs/day (only when evidence is found)
+**Phase:** 2 · **Trigger:** Recurrence, Mon–Fri every 2h 09:00–17:00 · **Est. credits:** 0–4 agent runs/day (only when you confirm a completion)
 
 The detector itself is deterministic. It calls the agent only when it has evidence, which keeps credit use low.
 
@@ -15,10 +15,12 @@ The detector itself is deterministic. It calls the agent only when it has eviden
 
 ## Steps
 1. **Excel → List rows** (Items, filter `Open eq 'Yes'`). Parse SourceLink and ContextLinks lines (`[type] Title | url`).
-2. Skip items whose History has a `completion_asked` line in the last 24h.
+2. Skip items whose History has a `completion_asked` or `completion_declined` line in the last 24h.
 3. For each item, evaluate the rules. Collect `{ID, evidence_text}`.
-4. If there's any evidence: run the agent with
-   `Run reconcile in detector mode for these items: <json>. Ask the user to confirm each.`
+4. For each item with evidence, post [`cards/completion-confirm.card.json`](cards/completion-confirm.card.json) (ITEM_TITLE, EVIDENCE, ITEM_ID) and wait for a response:
+   - complete → run the agent: `Run reconcile for <ID>. User confirmed. Minutes spent: <minutesSpent or unknown>.`
+   - not_yet → append `<now> flow completion_declined` to History
+   The card asks for confirmation itself, so the agent runs only when you say yes. That saves Copilot Credits.
 5. For each item asked about: **Get a row**, then **Update a row** with History + `<now> flow completion_asked <evidence>`.
 
 ## Notes

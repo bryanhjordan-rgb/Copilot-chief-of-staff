@@ -1,6 +1,7 @@
 """Tests for m365/scripts. Run: python3 -m unittest discover -s m365/tests -v"""
 
 import importlib.util
+import json
 import shutil
 import tempfile
 import unittest
@@ -131,6 +132,41 @@ class LintWorkbookTests(WorkbookTestCase):
     def test_skill_successes_cannot_exceed_runs(self):
         self.set_cells("Skills", 2, {"Name": "send-weekly-status", "Runs": 2, "Successes": 3})
         self.assertTrue(any("Successes (3) > Runs (2)" in e for e in self.lint_errors()))
+
+
+class CardTests(unittest.TestCase):
+    CARDS = Path(__file__).resolve().parent.parent / "flows" / "cards"
+    ACTIONS = {
+        "daily-brief": {"accept", "edit", "replan"},
+        "weekly-review": {"decide", "approve_all", "reject_all"},
+        "completion-confirm": {"complete", "not_yet"},
+    }
+
+    def strings(self, node):
+        if isinstance(node, dict):
+            for value in node.values():
+                yield from self.strings(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from self.strings(value)
+        elif isinstance(node, str):
+            yield node
+
+    def test_cards(self):
+        readme = (self.CARDS / "README.md").read_text(encoding="utf-8")
+        for name, actions in self.ACTIONS.items():
+            with self.subTest(card=name):
+                card = json.loads((self.CARDS / f"{name}.card.json").read_text(encoding="utf-8"))
+                self.assertEqual(card["type"], "AdaptiveCard")
+                self.assertEqual(card["version"], "1.5")  # highest version Teams renders
+                for s in self.strings(card):
+                    if "{{" in s:
+                        self.assertRegex(s, r"^\{\{[A-Z_]+\}\}$", "tokens must be whole string values")
+                        self.assertIn(f"`{s[2:-2]}`", readme, "token must be documented")
+                submitted = {a["data"]["action"] for a in card["actions"] if a["type"] == "Action.Submit"}
+                self.assertEqual(submitted, actions)
+                for action in actions:
+                    self.assertIn(f"`{action}`", readme)
 
 
 class SkillsValidatorTests(unittest.TestCase):

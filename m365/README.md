@@ -33,6 +33,7 @@ m365/
 ├── workbook/ChiefOfStaff.xlsx  # generated — upload to OneDrive
 ├── tests/                      # unittest suite for the scripts
 ├── flows/                      # workflow specs: daily-brief, completion-detector, weekly-skill-review
+│   └── cards/                  # Adaptive Card templates the flows post to Teams
 └── scripts/
     ├── skills.py               # validate + package skills for import
     ├── build_workbook.py       # build ChiefOfStaff.xlsx from the schema

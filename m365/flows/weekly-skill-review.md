@@ -6,8 +6,8 @@
 1. **Guard:** **Excel → List rows** (Items, filter `Open eq 'No'`). If fewer than 5 rows have CompletedOn in the last 30 days, run the agent for the week summary only (no mining) and stop.
 2. **Run agent** with:
    `Run skill-miner. Window: 30 days mining, 7 days summary. Present proposals for approval.`
-3. **Teams → Post adaptive card** with the review and one action set per proposal (**Approve** / **Reject**). **Edit** opens chat.
-4. **On response:** run the agent with `approve <n>` / `reject <n>`. Skill-miner step 9 applies the change to the Skills table.
+3. **Compose + post** [`cards/weekly-review.card.json`](cards/weekly-review.card.json) (REVIEW_TITLE, REVIEW_MARKDOWN, REVIEW_DATE) and wait for a response.
+4. **On response:** run the agent with the `decisions` text, `approve all`, or `reject all` (see [cards/README.md](cards/README.md)). Skill-miner step 9 applies the change to the Skills table.
 5. **Monthly (first Friday):** append a cost line: count of agent runs triggered by workflows this month (from flow run history).
 
 ## Graduation hand-off (manual, Phase 4)

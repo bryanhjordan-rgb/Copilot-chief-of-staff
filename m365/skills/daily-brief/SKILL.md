@@ -7,7 +7,7 @@ description: >-
   "morning brief", "what does today look like", "re-plan", and the scheduled
   07:00 run. Do not use for adding a single item (intake).
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   tier: "native"
   signatures: "plan|day|self"
   tools: "excel, work-iq, outlook-calendar"
@@ -33,7 +33,7 @@ The user knows the 3 outcomes that matter today, when they'll do them, and what 
 7. **Goals pulse.** `list_rows(Goals)`. Name any priority-1/2 goal with no item planned today, or with LastUpdate 7+ days ago.
 8. **Drop/delegate.** Up to 3 items with score <30 and no goal fit.
 9. **Write back.** For each planned item, `update_row(Items, ID)` with DoDate=today, PlannedSlot (`HH:MM-HH:MM`), Status=scheduled (unless in_progress), Updated, and append `<now> agent scheduled <slot>` to History.
-10. **Deliver.** Scheduled: return the brief for the workflow to post as a card. Interactive: show it and end with one question.
+10. **Deliver.** Scheduled: return the brief for the workflow to post as a card, in card-safe markdown: line 1 is the header; then `**TOP 3**`-style bold labels instead of headings, `- ` bullets, `[title](url)` links, and no tables or code fences. Interactive: show it and end with one question.
 
 ## Output
 

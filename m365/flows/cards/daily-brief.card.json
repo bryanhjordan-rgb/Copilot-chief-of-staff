@@ -1,0 +1,43 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "{{BRIEF_TITLE}}",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "{{BRIEF_MARKDOWN}}",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "editText",
+      "placeholder": "What should change? (e.g. swap #2 and #3, push budget to tomorrow)",
+      "isMultiline": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Accept",
+      "style": "positive",
+      "data": {"action": "accept", "briefDate": "{{BRIEF_DATE}}"}
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Send edit",
+      "data": {"action": "edit", "briefDate": "{{BRIEF_DATE}}"}
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Re-plan",
+      "data": {"action": "replan", "briefDate": "{{BRIEF_DATE}}"}
+    }
+  ]
+}

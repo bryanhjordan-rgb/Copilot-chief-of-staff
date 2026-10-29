@@ -8,7 +8,7 @@ description: >-
   skill?", "review my week", or when the same correction appears twice. Do not
   use to execute a playbook.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   tier: "native"
   signatures: "review|skills|self"
   tools: "excel"
@@ -65,6 +65,8 @@ PROPOSALS
 
 GRADUATE: send-weekly-status (7 runs, 86%) → native? [yes/no]
 ```
+
+When invoked by the weekly workflow, return the same content in card-safe markdown (line 1 = title; bold labels, `- ` bullets, numbered proposals, `[title](url)` links; no tables or code fences).
 
 If nothing meets the thresholds, say: "No new skill candidates this week." Then show the week summary only.
 

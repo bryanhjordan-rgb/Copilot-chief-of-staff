@@ -8,7 +8,7 @@ description: >-
   when the completion detector finds evidence. Do not use to drop an item without
   doing it (just set Status=dropped, Open=No).
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
   tier: "native"
   signatures: "close|item|self"
   tools: "excel, work-iq"
@@ -25,7 +25,7 @@ The item's completion columns let a future reader (or the skill miner) understan
 - Trigger: `user` (user says done) or `detector` (evidence found; confirm before closing)
 
 ## Steps
-1. **Confirm (detector only).** "Looks like **<title>** is done (<evidence>). Mark complete?" Stop until the user answers.
+1. **Confirm (detector only).** "Looks like **<title>** is done (<evidence>). Mark complete?" Stop until the user answers. Skip this when the message says "User confirmed", because the completion card already asked.
 2. **Read** the row with `get_row(Items, ID)`.
 3. **Gather evidence** from the SourceLink and ContextLinks, plus Work IQ since Created:
    - mail you sent on linked threads, meetings that took place, files edited, Teams messages posted
