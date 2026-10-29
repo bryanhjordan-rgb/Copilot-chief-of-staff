@@ -19,6 +19,7 @@ Each phase ends with an exit test. Don't start the next phase until the current 
 ## Phase 1 — Conversational MVP (weeks 1–2)
 
 **Goal:** Talk to the agent, add items, and get a prioritized day plan on demand.
+**How:** follow [08-build-guide.md](08-build-guide.md).
 
 - [ ] Build the workbook (`python3 m365/scripts/build_workbook.py`) or use the committed `m365/workbook/ChiefOfStaff.xlsx`. Upload it to OneDrive `/Apps/ChiefOfStaff/`
 - [ ] Create the agent (harness) and paste `agent/instructions.md`. Configure tools per `agent/agent-config.yaml`

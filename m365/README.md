@@ -20,7 +20,8 @@ m365/
 │   ├── 04-skill-lifecycle.md   # observe → mine → propose → playbook → native
 │   ├── 05-roadmap.md           # phases, exit tests, iteration log
 │   ├── 06-decisions.md         # ADRs + open questions
-│   └── 07-tenant-readiness.md  # checklist for IT (do this first)
+│   ├── 07-tenant-readiness.md  # checklist for IT (do this first)
+│   └── 08-build-guide.md       # Phase 1 step-by-step in Copilot Studio
 ├── agent/
 │   ├── instructions.md         # agent instructions (<8k chars, checked)
 │   └── agent-config.yaml       # tools, knowledge, triggers, model
@@ -57,5 +58,6 @@ CI runs `validate` and a workbook build on every PR that touches `m365/`.
 ## Start here
 
 1. [07-tenant-readiness.md](docs/07-tenant-readiness.md) — confirm what your tenant allows
-2. [05-roadmap.md](docs/05-roadmap.md) — Phase 0 → Phase 1 build steps
-3. Fill the `{{PLACEHOLDERS}}` in `agent/instructions.md` (same values as the root `CLAUDE.md`)
+2. [08-build-guide.md](docs/08-build-guide.md) — Phase 1 build, step by step, with smoke tests
+3. [05-roadmap.md](docs/05-roadmap.md) — phases and exit tests
+4. Fill the `{{PLACEHOLDERS}}` in `agent/instructions.md` (same values as the root `CLAUDE.md`)
